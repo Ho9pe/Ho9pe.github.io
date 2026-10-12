@@ -1,0 +1,56 @@
+title: Md Asif Sajeed
+tagline: Security researcher · ML for systems security · Reverse engineering & CTF
+description: >-
+  Md Asif Sajeed — B.Sc. in CSE from RUET, Bangladesh. Research on graph neural
+  networks for malware detection under distribution shift, binary analysis, and
+  CTF writeups.
+url: https://ho9pe.github.io
+baseurl: ""
+lang: en
+author:
+  name: Md Asif Sajeed
+  email: asifsajeed01@gmail.com
+
+social:
+  github: https://github.com/Ho9pe
+  scholar: https://scholar.google.com/citations?user=xEBcse4AAAAJ
+  linkedin: https://www.linkedin.com/in/md-asif-sajeed-513b31286/
+  htb: https://app.hackthebox.com/users/2031702
+
+cv_pdf: /assets/cv/Md_Asif_Sajeed_CV.pdf
+
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+  auto_ids: true
+  toc_levels: 2..3
+
+permalink: /blog/:title/
+timezone: Asia/Dhaka
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+feed:
+  path: /feed.xml
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+
+exclude:
+  - README.md
+  - tools/
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - .jekyll-cache/
+excerpt_separator: "<!--more-->"

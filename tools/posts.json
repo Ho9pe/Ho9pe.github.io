@@ -1,0 +1,163 @@
+{
+  "replace": [
+    ["34.170.146.252", "<host>"]
+  ],
+  "notes": [
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/crackme/(+) 1. CryptPad.md",
+      "slug": "cryptpad", "date": "2026-07-02 10:00:00 +0600",
+      "title": "CryptPad: when the key ships with the ciphertext",
+      "series": "crackmes.one", "platform": "crackmes.one",
+      "summary": "A Windows 'encrypted notepad' sandwiches RC4 between two XOR passes, then appends the random key to every file it writes.",
+      "tags": ["rev", "crypto", "windows"]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/crackme/(+) 2. FLRSCRNSVR.md",
+      "slug": "flrscrnsvr", "date": "2026-07-02 11:00:00 +0600",
+      "title": "FLRSCRNSVR: peeling a screensaver's three-stage cipher",
+      "series": "crackmes.one", "platform": "crackmes.one",
+      "summary": "A 64-bit .scr hides a 25-character check behind junk code. Undoing a reversal, a position-dependent XOR and a substitution recovers the flag.",
+      "tags": ["rev", "windows"]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/crackme/(+) 3. RecordPlayer.md",
+      "slug": "recordplayer", "date": "2026-07-02 12:00:00 +0600",
+      "title": "RecordPlayer: fixing two hidden switches with a two-byte patch",
+      "series": "crackmes.one", "platform": "crackmes.one",
+      "summary": "The audio plays as noise because direction and pitch are hard-coded to the wrong values. Two bytes in x64dbg make it play the flag.",
+      "tags": ["rev", "windows", "patching"]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/crackme/(+) 4. httpd.md",
+      "slug": "httpd-icmp-backdoor", "date": "2026-07-02 13:00:00 +0600",
+      "title": "httpd: an ICMP-triggered backdoor behind an HTTP decoy",
+      "series": "crackmes.one", "platform": "crackmes.one",
+      "summary": "A Go binary for FreeBSD waits for a magic ping and builds its AES key from packet fields. Most of those fields turn out to be predictable.",
+      "tags": ["rev", "go", "network", "crypto"]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/crackme/(+) 5. connected.md",
+      "slug": "connected", "date": "2026-07-02 14:00:00 +0600",
+      "title": "connected: talking to a simulated network of oracles",
+      "series": "crackmes.one", "platform": "crackmes.one",
+      "summary": "A small C++ network simulator. The orchestrator wants a message whose checksum lands on one constant, so I brute-forced an 8-byte palindrome.",
+      "tags": ["rev", "linux"]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/crackme/(+) 6. whatdidyoutype.md",
+      "slug": "what-did-you-type", "date": "2026-07-02 15:00:00 +0600",
+      "title": "What Did You Type: from USB keystrokes to decrypted exfiltration",
+      "series": "crackmes.one", "platform": "crackmes.one",
+      "summary": "Keystrokes in a USB capture lead to a dropper, a reflective loader and a file-stealing agent whose AES keys travel alongside the stolen files.",
+      "tags": ["forensics", "malware", "rev", "windows"]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/crackme/(+) 7. wallpaper.md",
+      "slug": "wallpaper", "date": "2026-07-02 16:00:00 +0600",
+      "title": "wallpaper: meet-in-the-middle on a 1 KB state machine",
+      "series": "crackmes.one", "platform": "crackmes.one",
+      "summary": "A syscall-only ELF checks a 37-digit base-4 password through an invertible state machine. A forward BFS and a backward DFS meet in the middle.",
+      "tags": ["rev", "linux", "algorithms"]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/crackme/(+) 8. moment.md",
+      "slug": "moment-anti-analysis", "date": "2026-07-02 17:00:00 +0600",
+      "title": "moment.exe: a static solve past 17 anti-analysis checks",
+      "series": "crackmes.one", "platform": "crackmes.one",
+      "summary": "Heavy anti-debugging, encoded strings and an event-gated flag path. Rebuilding the string table and reading call-site arguments recovers the flag without running the binary.",
+      "tags": ["rev", "windows", "anti-debug"]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/Alpaca/6 - June.md",
+      "defaults": {"series": "AlpacaHack Daily", "platform": "AlpacaHack"},
+      "sections": [
+        {"heading": "Day 19", "slug": "alpacahack-flag-printer-20xx", "date": "2026-06-19 20:00:00 +0600",
+         "title": "Flag Printer 20XX: corrupting CPython's small integers",
+         "summary": "One byte written through /proc/self/mem changes what the cached integer 6 means, which redirects a string index to the hidden part of the flag.",
+         "tags": ["pwn", "python"]},
+        {"heading": "Day 20", "slug": "alpacahack-xorshift521", "date": "2026-06-20 20:00:00 +0600",
+         "title": "xorshift521: skipping 521^271441 iterations with linear algebra",
+         "summary": "The generator is a linear map over GF(2), so the impossible loop becomes one matrix power with a reduced exponent.",
+         "tags": ["crypto", "math"]},
+        {"heading": "Day 27", "slug": "alpacahack-style-your-alpaca", "date": "2026-06-27 20:00:00 +0600",
+         "title": "Style Your Alpaca: leaking a flag with CSS alone",
+         "summary": "JavaScript is blocked, but img-src * and attribute selectors leak the flag one letter at a time through background-image requests.",
+         "tags": ["web", "css-injection"]},
+        {"heading": "Day 28", "slug": "alpacahack-only-forward", "date": "2026-06-28 20:00:00 +0600",
+         "title": "Only forward: canary leak plus ret2win",
+         "summary": "A format-string bug leaks the stack canary and an overflow returns into win() on a non-PIE binary.",
+         "tags": ["pwn"]}
+      ]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/Alpaca/7- July.md",
+      "defaults": {"series": "AlpacaHack Daily", "platform": "AlpacaHack"},
+      "sections": [
+        {"heading": "Day 19", "slug": "alpacahack-no-win-func", "date": "2026-07-19 20:00:00 +0600",
+         "title": "no-win-func: ret2libc from a printf leak",
+         "summary": "No win() and NX enabled, so a leaked printf address and a two-gadget ROP chain call system(\"/bin/sh\"). All Linux work done in Docker from Windows.",
+         "tags": ["pwn", "rop"]},
+        {"heading": "Day 25", "slug": "alpacahack-what-is-my-pointer", "date": "2026-07-25 20:00:00 +0600",
+         "title": "what-is-my-pointer: safe-linking leaks the heap",
+         "summary": "A use-after-free read on a tcache chunk exposes safe-linking's shifted pointer, which is enough to point an arbitrary read at the flag.",
+         "tags": ["pwn", "heap"]}
+      ]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/Alpaca/8 - August.md",
+      "defaults": {"series": "AlpacaHack Daily", "platform": "AlpacaHack"},
+      "sections": [
+        {"heading": "Day 18-20", "slug": "alpacahack-wrong-instruction", "date": "2026-08-20 20:00:00 +0600",
+         "title": "wrong-instruction: undoing four anti-disassembly tricks in IDA",
+         "summary": "A misaligned jump, a return-address trampoline, disguised code and an opaque predicate hide a one-line per-byte check.",
+         "tags": ["rev", "anti-disassembly"]},
+        {"heading": "Day 21-23", "slug": "alpacahack-greetings-i18n-2", "date": "2026-08-23 20:00:00 +0600",
+         "title": "greetings-i18n-2: from str.format injection to bytecode",
+         "summary": "A format-string injection walks an exception's traceback into module globals, leaks the checker's code object, and the check is inverted offline.",
+         "tags": ["web", "python"]}
+      ]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/Alpaca/9 - September.md",
+      "defaults": {"series": "AlpacaHack Daily", "platform": "AlpacaHack"},
+      "sections": [
+        {"heading": "Day 19-21", "slug": "alpacahack-nested-eval", "date": "2026-09-21 20:00:00 +0600",
+         "title": "nested eval: the jail hands you its own blacklist",
+         "summary": "The banned characters live in a global list, and an f-string rebuilds them by index.",
+         "tags": ["misc", "pyjail"]},
+        {"heading": "Day 22-24", "slug": "alpacahack-the-3rd", "date": "2026-09-24 20:00:00 +0600",
+         "title": "The 3rd: ECDLP over a modulus with a secret prime",
+         "summary": "The secret third prime never matters. Two small public primes, CRT and a known flag format pin the scalar down exactly.",
+         "tags": ["crypto", "ecc"]},
+        {"heading": "Day 27-30", "slug": "alpacahack-what-is-my-pointer-2", "date": "2026-09-30 20:00:00 +0600",
+         "title": "what is my pointer 2: walking __environ to the flag",
+         "summary": "With a printf leak and an 8-byte arbitrary read, __environ leads to the stack, where the flag lives only as an environment variable.",
+         "tags": ["pwn"]}
+      ]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/Alpaca/10 - October.md",
+      "slug": "alpacahack-fsbase-modification", "date": "2026-10-08 20:00:00 +0600",
+      "title": "fsbase-modification: making the stack canary zero",
+      "series": "AlpacaHack Daily", "platform": "AlpacaHack",
+      "summary": "Pointing the FS base at zero-filled BSS turns the stack canary into a known value, and the overflow becomes a plain ret2win.",
+      "tags": ["pwn"]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/Linker_Loader/PIC in x64.md",
+      "slug": "position-independent-code-x86-64", "date": "2026-07-02 09:00:00 +0600",
+      "title": "Position-independent code on x86-64: GOT, PLT and lazy binding",
+      "series": "Notes",
+      "summary": "Following one global and one function call from the compiler's placeholder zeros, through the linker's offsets and ld.so's relocations, to the first lazy-binding resolve in GDB.",
+      "tags": ["linux", "elf", "notes"]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/Learning.md",
+      "slug": "metacognitive-traps-coding-with-ai", "date": "2026-08-25 21:00:00 +0600",
+      "title": "Metacognitive traps when coding with AI",
+      "series": "Notes", "toc": false,
+      "summary": "Eight ways I've noticed my own problem-solving go wrong, several of them made worse by AI code completion.",
+      "tags": ["notes", "learning"]
+    }
+  ]
+}

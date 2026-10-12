@@ -1,0 +1,33 @@
+---
+layout: default
+title: Blog
+permalink: /blog/
+description: CTF writeups (AlpacaHack Daily, crackmes.one), event recaps and notes on binaries, Linux internals and learning.
+---
+{%- assign series_list = "AlpacaHack Daily|crackmes.one|CTF recaps|Notes" | split: "|" -%}
+{%- assign tag_list = "pwn|rev|crypto|web|forensics|windows|linux" | split: "|" -%}
+<header class="page-head">
+  <h1>Blog</h1>
+  <p class="lede">Writeups of challenges I learned the most from, a few event recaps, and notes from my Obsidian vault.</p>
+</header>
+
+<div class="filters" role="group" aria-label="Filter posts">
+  <button type="button" data-tag="all" aria-pressed="true">all</button>
+  {% for s in series_list %}<button type="button" data-tag="{{ s | slugify }}" aria-pressed="false">{{ s }}</button>{% endfor %}
+  {% for t in tag_list %}<button type="button" data-tag="{{ t | slugify }}" aria-pressed="false">#{{ t }}</button>{% endfor %}
+</div>
+
+<ul class="post-list">
+  {% for post in site.posts %}
+  {%- capture tagslugs -%}{{ post.series | slugify }}{% for t in post.tags %} {{ t | slugify }}{% endfor %}{%- endcapture -%}
+  <li data-tags="{{ tagslugs | strip }}">
+    <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%-d %b %Y' }}</time>
+    <div>
+      {% if post.series %}<div class="series">{{ post.series }}</div>{% endif %}
+      <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+      {% if post.summary %}<p>{{ post.summary }}</p>{% endif %}
+      <ul class="tags">{% for t in post.tags %}<li><a href="#{{ t | slugify }}">{{ t }}</a></li>{% endfor %}</ul>
+    </div>
+  </li>
+  {% endfor %}
+</ul>

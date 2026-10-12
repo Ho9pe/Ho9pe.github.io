@@ -1,0 +1,78 @@
+---
+layout: default
+title: Md Asif Sajeed
+---
+<section class="hero">
+  <img class="hero-photo" src="{{ '/assets/img/profile.jpg' | relative_url }}" alt="Portrait of Md Asif Sajeed" width="200" height="200">
+  <div>
+    <h1>Md Asif Sajeed</h1>
+    <p class="role">Offensive security · Reverse engineering & DFIR · ML for systems security</p>
+    <p class="intro">I'm a Computer Science &amp; Engineering graduate from RUET, Bangladesh. My research asks whether machine-learning malware detectors keep working once the world moves on, and in my spare time I reverse binaries and play CTFs.</p>
+    <ul class="links">
+      <li><a class="btn primary" href="{{ site.cv_pdf | relative_url }}">Download CV</a></li>
+      <li><a class="btn" href="mailto:{{ site.author.email }}">Email</a></li>
+      <li><a class="btn" href="{{ site.social.scholar }}">Google Scholar</a></li>
+      <li><a class="btn" href="{{ site.social.github }}">GitHub</a></li>
+      <li><a class="btn" href="{{ site.social.linkedin }}">LinkedIn</a></li>
+      <li><a class="btn" href="{{ site.social.htb }}">Hack The Box</a></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section two-col">
+  <div class="prose">
+    <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin:0 0 14px;">About</h2>
+    <p>I graduated from Rajshahi University of Engineering &amp; Technology (RUET) in August 2026, ranked 14th in my cohort with a CGPA of 3.79/4.00. I work where cybersecurity meets machine learning. My undergraduate thesis built graph-neural-network malware detectors from binary control flow graphs, then tested them on malware collected a year later. The model that looked best on the usual benchmark was among the first to break, and that finding is now a <a href="{{ '/research/' | relative_url }}">journal paper under review</a>.</p>
+    <p>Before the thesis I led a four-person undergraduate research group whose work on satellite imagery, clinical text and medical imaging produced three IEEE conference papers. Outside research I analyse malware, reverse engineer binaries and play CTFs, mostly solo on Hack The Box, and I <a href="{{ '/blog/' | relative_url }}">write up</a> the challenges I learn the most from. At the moment I'm working through <em>Practical Malware Analysis</em> and <em>Hands-On Machine Learning</em>.</p>
+    <p>I'm looking for <strong>fully funded PhD positions starting in 2027</strong>. I'm also open to roles in security research, machine learning and software engineering.</p>
+  </div>
+  <div>
+    <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin:0 0 14px;">Research interests</h2>
+    <ul class="chips">
+      <li>ML for systems security</li>
+      <li>Malware detection under distribution shift</li>
+      <li>Binary analysis &amp; reverse engineering</li>
+      <li>Explainability of security models</li>
+      <li>DFIR &amp; malware analysis</li>
+      <li>Fuzzing &amp; vulnerability discovery</li>
+    </ul>
+    <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin:28px 0 14px;">Education &amp; experience</h2>
+    <ul class="timeline">
+      <li><div class="t-head"><strong>B.Sc. in Computer Science &amp; Engineering</strong><span class="when">2022 – 2026</span></div>
+        <div class="sub">RUET · CGPA 3.79/4.00, rank 14 · Thesis supervised by Prof. Dr. Md. Nazrul Islam Mondal</div></li>
+      <li><div class="t-head"><strong>Undergraduate Research Group Lead</strong><span class="when">2024 – 2026</span></div>
+        <div class="sub">RUET · supervised by Shyla Afroge · three IEEE conference papers</div></li>
+      <li><div class="t-head"><strong>Member, Hidden Investigations</strong><span class="when">2025 – now</span></div>
+        <div class="sub">CTF and security community · malware analysis and reverse engineering</div></li>
+      <li><div class="t-head"><strong>Industrial Trainee, Dynamic Solution Innovators</strong><span class="when">Mar 2025</span></div>
+        <div class="sub">Dhaka · designed a role-based feedback management system, from requirements to sprint plan</div></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <h2>News</h2>
+  <ul class="news">
+    <li><time>Sep 2026</time><span>Preprint on arXiv: <a href="https://arxiv.org/abs/2609.24280"><em>Temporal Generalization and Explanation Stability of Control Flow Graph Neural Networks for Malware Detection</em></a>, now under review at the <em>Journal of Information Security and Applications</em>.</span></li>
+    <li><time>Sep 2026</time><span>HTB Holmes CTF 2026: 433rd of 5,637 teams, solo.</span></li>
+    <li><time>Aug 2026</time><span>Graduated with a B.Sc. in Computer Science &amp; Engineering from RUET.</span></li>
+    <li><time>Jul 2026</time><span>HTB Cyber Apocalypse 2026: 120 of 136 challenges, 210th of 6,744 teams, solo. <a href="{{ '/blog/cyber-apocalypse-2026-recap/' | relative_url }}">Recap</a></span></li>
+    <li><time>Jun 2026</time><span>Our explainable multi-scale CNN for Alzheimer's diagnosis appeared in the IEEE QPAIN 2026 proceedings.</span></li>
+    <li><time>Dec 2025</time><span>Two papers presented at IEEE ICCIT 2025, including my first first-author paper. HTB University CTF 2025 with team RUET: 134th of 1,014.</span></li>
+    <li><time>Sep 2025</time><span>HTB Holmes CTF 2025: all 65 challenges solved solo, 251st of 7,085 teams. <a href="{{ '/blog/holmes-ctf-2025-recap/' | relative_url }}">Recap</a></span></li>
+  </ul>
+</section>
+
+<section class="section">
+  <h2>Latest writing</h2>
+  <div class="cards">
+    {% for post in site.posts limit: 6 %}
+    <article class="card">
+      <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+      {% if post.summary %}<p>{{ post.summary }}</p>{% endif %}
+      <div class="meta">{{ post.date | date: '%-d %b %Y' }}{% if post.series %} · {{ post.series }}{% endif %}</div>
+    </article>
+    {% endfor %}
+  </div>
+  <p style="margin-top:18px;"><a href="{{ '/blog/' | relative_url }}">All {{ site.posts.size }} posts →</a></p>
+</section>

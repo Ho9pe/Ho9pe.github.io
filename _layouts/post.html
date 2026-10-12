@@ -1,0 +1,34 @@
+---
+layout: default
+---
+{%- assign words = content | strip_html | number_of_words -%}
+{%- assign minutes = words | divided_by: 220 | plus: 1 -%}
+<article class="post">
+  <header class="post-head">
+    <p class="post-kicker">
+      <a href="{{ '/blog/' | relative_url }}">Blog</a>
+      {% if page.series %}<span aria-hidden="true">/</span> {{ page.series }}{% endif %}
+    </p>
+    <h1>{{ page.title }}</h1>
+    <p class="post-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%-d %b %Y' }}</time>
+      · {{ minutes }} min read
+      {% if page.platform %}· {{ page.platform }}{% endif %}
+    </p>
+    {% if page.summary %}<p class="lede">{{ page.summary }}</p>{% endif %}
+    {% if page.tags.size > 0 %}
+    <ul class="tags" aria-label="Tags">
+      {% for t in page.tags %}<li><a href="{{ '/blog/' | relative_url }}#{{ t | slugify }}">{{ t }}</a></li>{% endfor %}
+    </ul>
+    {% endif %}
+  </header>
+  <div class="prose">
+{{ content }}
+  </div>
+  <footer class="post-foot">
+    <nav class="post-nav" aria-label="More posts">
+      {% if page.previous %}<a class="prev" href="{{ page.previous.url | relative_url }}"><span>← Older</span>{{ page.previous.title }}</a>{% else %}<span></span>{% endif %}
+      {% if page.next %}<a class="next" href="{{ page.next.url | relative_url }}"><span>Newer →</span>{{ page.next.title }}</a>{% endif %}
+    </nav>
+  </footer>
+</article>
