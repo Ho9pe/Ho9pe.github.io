@@ -147,7 +147,7 @@
       "source": "G:/Obsidian-Vault/CS/Linker_Loader/PIC in x64.md",
       "slug": "position-independent-code-x86-64", "date": "2026-07-02 09:00:00 +0600",
       "title": "Position-independent code on x86-64: GOT, PLT and lazy binding",
-      "series": "Notes",
+      "series": "Notes", "append": "tools/extras/pic-in-x64-gdb-appendix.md",
       "summary": "Following one global and one function call from the compiler's placeholder zeros, through the linker's offsets and ld.so's relocations, to the first lazy-binding resolve in GDB.",
       "tags": ["linux", "elf", "notes"]
     },
@@ -158,6 +158,14 @@
       "series": "Notes", "toc": false,
       "summary": "Eight ways I've noticed my own problem-solving go wrong, several of them made worse by AI code completion.",
       "tags": ["notes", "learning"]
+    },
+    {
+      "source": "G:/Obsidian-Vault/CS/CTF/HTB Sherlock 26/ironfeather_writeup.md",
+      "slug": "htb-ironfeather", "date": "2026-10-07 15:00:00 +0600",
+      "title": "IronFeather: reversing a drone's custom KDF to rebuild its crash",
+      "series": "HTB Sherlocks", "platform": "Hack The Box",
+      "summary": "A stripped PX4 binary hides a 384-round ARX key derivation. Reimplementing it decrypts the mission store and the flight log, which show the payload release, an injected motor failure and the crash site.",
+      "tags": ["rev", "crypto", "forensics"]
     }
   ]
 }

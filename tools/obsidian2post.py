@@ -14,6 +14,8 @@ What the converter does to each note:
   * turns ==highlight== into <mark>, [[link|alias]] into plain text,
     and ![[image.png]] into a normal image copied to assets/img/posts/
   * applies the "replace" pairs (e.g. live challenge hosts -> <host>)
+  * appends the file named by an entry's "append" (site-only extras that
+    aren't in the note, so re-running never drops them)
   * wraps the body in {% raw %} so Jinja/f-string braces survive Liquid
 Standard library only.
 """
@@ -109,9 +111,11 @@ def write_post(meta, body):
     toc = ""
     if meta.get("toc", True):
         toc = '<details class="toc" markdown="1">\n<summary>Contents</summary>\n\n* TOC\n{:toc}\n\n</details>\n\n'
+    if meta.get("append"):
+        body += "\n\n" + (ROOT / meta["append"]).read_text(encoding="utf-8").rstrip("\n")
     text = "\n".join(fm) + "\n\n" + toc + "{% raw %}\n" + body + "\n{% endraw %}\n"
     name = f"{meta['date'][:10]}-{meta['slug']}.md"
-    (POSTS / name).write_text(text, encoding="utf-8")
+    (POSTS / name).write_text(text, encoding="utf-8", newline="\n")
     return name
 
 

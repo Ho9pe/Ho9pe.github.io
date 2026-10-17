@@ -94,7 +94,7 @@ Create `_posts/YYYY-MM-DD-slug.md` with the front matter above, write Markdown, 
 
 ### Convert notes from Obsidian
 
-1. Add an entry to `tools/posts.json` with `source` (path to the note in the vault), `slug`, `date`, `title`, `summary`, `tags`, and optionally `series`, `platform`, and `"toc": false`. A note that holds several writeups can be split on its top-level `# ` headings with `sections` (see the existing entries).
+1. Add an entry to `tools/posts.json` with `source` (path to the note in the vault), `slug`, `date`, `title`, `summary`, `tags`, and optionally `series`, `platform`, `"toc": false` and `append`. `append` names a Markdown file (kept in `tools/extras/`) that's added to the end of the post: use it for site-only extras that aren't in the note. A note that holds several writeups can be split on its top-level `# ` headings with `sections` (see the existing entries).
 2. Run it with any Python 3. Only the standard library is used.
    ```
    python tools/obsidian2post.py tools/posts.json
@@ -103,7 +103,7 @@ Create `_posts/YYYY-MM-DD-slug.md` with the front matter above, write Markdown, 
 
 The converter drops the note's first H1, removes `table-of-contents` blocks, turns `==highlight==` into `<mark>` and `[[link|alias]]` into plain text, copies `![[image.png]]` embeds into `assets/img/posts/`, applies the `replace` pairs (used to hide live challenge hosts), and wraps the body in `{% raw %}`.
 
-> **It rewrites every post listed in `posts.json` each time it runs.** Any hand edits to a converted post are lost, so make edits in the Obsidian note and re-run. Every `source` path also has to exist on the machine you run it on.
+> **It rewrites every post listed in `posts.json` each time it runs.** Any hand edits to a converted post are lost, so make edits in the Obsidian note (or in an `append` file) and re-run. Every `source` path also has to exist on the machine you run it on. Posts not listed in `posts.json` (the CTF recaps, the malware analysis, the side-channel writeup) are hand-written and never touched.
 
 ### Edit pages
 
