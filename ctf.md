@@ -18,7 +18,7 @@ lede: I mostly play solo under the team name Despair, and with team RUET for uni
 <table class="data">
   <thead><tr><th>When</th><th>Event</th><th>Team</th><th>Result</th></tr></thead>
   <tbody>
-    <tr><td class="num">Sep 2026</td><td>HTB Holmes CTF 2026</td><td>Despair (solo)</td><td>433rd of 5,637 · 51 / 111 solved</td></tr>
+    <tr><td class="num">Sep 2026</td><td>HTB Holmes CTF 2026</td><td>Despair (solo)</td><td>433rd of 5,637 · 51 / 111 solved · <a href="{{ '/blog/htb-ironfeather/' | relative_url }}">IronFeather writeup</a></td></tr>
     <tr><td class="num">Jul 2026</td><td>HTB Cyber Apocalypse 2026</td><td>Despair (solo)</td><td>210th of 6,744 · 120 / 136 solved · <a href="{{ '/blog/cyber-apocalypse-2026-recap/' | relative_url }}">recap</a></td></tr>
     <tr><td class="num">Dec 2025</td><td>HTB University CTF 2025</td><td>RUET</td><td>134th of 1,014 · 31 / 34 solved</td></tr>
     <tr><td class="num">Dec 2025</td><td>TryHackMe Advent of Cyber 2025</td><td>solo</td><td>All 24 challenges completed</td></tr>

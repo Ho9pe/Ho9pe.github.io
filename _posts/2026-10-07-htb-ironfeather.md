@@ -2,9 +2,9 @@
 title: "IronFeather: reversing a drone's custom KDF to rebuild its crash"
 date: 2026-10-07 15:00:00 +0600
 series: "HTB Sherlocks"
-platform: "Hack The Box"
-summary: "A stripped PX4 binary hides a 384-round ARX key derivation. Reimplementing it decrypts the mission store and the flight log, which show the payload release, an injected motor failure and the crash site."
-description: "A stripped PX4 binary hides a 384-round ARX key derivation. Reimplementing it decrypts the mission store and the flight log, which show the payload release, an injected motor failure and the crash site."
+platform: "HTB Holmes CTF 2026"
+summary: "A Holmes CTF 2026 Sherlock: a stripped PX4 binary hides a 384-round ARX key derivation. Reimplementing it decrypts the mission store and the flight log, which show the payload release, an injected motor failure and the crash site."
+description: "A Holmes CTF 2026 Sherlock: a stripped PX4 binary hides a 384-round ARX key derivation. Reimplementing it decrypts the mission store and the flight log, which show the payload release, an injected motor failure and the crash site."
 tags: ["rev", "crypto", "forensics"]
 ---
 
