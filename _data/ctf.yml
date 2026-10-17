@@ -1,0 +1,110 @@
+# Results table on /ctf/, newest first, grouped by `year`.
+# `rank` (a number) prints as 433rd; with `total` it also gets a "/ 5,637" and a
+# bar for the share of teams finished ahead of. `place` replaces the rank text,
+# `note` follows it. `link` is optional.
+
+results:
+  - year: 2026
+    month: Sep
+    event: HTB Holmes CTF 2026
+    team: Despair · solo
+    rank: 433
+    total: 5637
+    solved: 51 / 111
+    link: { label: IronFeather writeup, url: /blog/htb-ironfeather/ }
+  - year: 2026
+    month: Jul
+    event: HTB Cyber Apocalypse 2026
+    team: Despair · solo
+    rank: 210
+    total: 6744
+    solved: 120 / 136
+    link: { label: Recap, url: /blog/cyber-apocalypse-2026-recap/ }
+  - year: 2025
+    month: Dec
+    event: HTB University CTF 2025
+    team: RUET
+    rank: 134
+    total: 1014
+    solved: 31 / 34
+  - year: 2025
+    month: Dec
+    event: TryHackMe Advent of Cyber 2025
+    team: solo
+    place: Completed
+    solved: 24 / 24
+  - year: 2025
+    month: Sep
+    event: HTB Holmes CTF 2025
+    team: Despair · solo
+    rank: 251
+    total: 7085
+    solved: 65 / 65
+    link: { label: Recap, url: /blog/holmes-ctf-2025-recap/ }
+  - year: 2025
+    month: Mar
+    event: HTB Cyber Apocalypse 2025
+    team: Despair
+    rank: 561
+    total: 8130
+    solved: 39 / 77
+  - year: 2025
+    month: Mar
+    event: TryHackMe Hackfinity Battle
+    team: Despair
+    rank: 306
+    solved: room completed
+  - year: 2025
+    month: Mar
+    event: Ugra CTF Quals 2025
+    team: Hope9
+    rank: 45
+    note: unofficial
+  - year: 2025
+    month: Mar
+    event: VishwaCTF 2025
+    team: hope9
+    rank: 180
+    solved: 1,800 pts
+  - year: 2025
+    month: Feb
+    event: ACECTF 2025
+    team: Despair
+    rank: 283
+    solved: 1,300 pts
+  - year: 2025
+    month: Feb
+    event: TRX CTF 2025
+    team: Despair
+    rank: 216
+  - year: 2025
+    month: Jan
+    event: CodeFest CTF 2025
+    team: Despair
+    rank: 51
+    solved: 2,116 pts
+  - year: 2025
+    month: Jan
+    event: KnightCTF 2025
+    team: Despair
+    rank: 207
+    solved: 1,250 pts
+  - year: 2025
+    month: Jan
+    event: MIST CyberRaid
+    team: timepass (RUET)
+    rank: 69
+    solved: 980 pts
+  - year: 2025
+    month: Jan
+    event: New Year CTF 2025
+    team: Despair
+    rank: 180
+    solved: 1,400 pts
+  - year: 2024
+    month: Dec
+    event: HTB University CTF 2024
+    team: RUET
+    rank: 268
+    total: 1128
+    solved: 25 / 49

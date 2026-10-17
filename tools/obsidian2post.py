@@ -2,18 +2,24 @@
 """Turn Obsidian notes into Jekyll posts for this site.
 
 Usage:
-    python tools/obsidian2post.py tools/posts.json
+    python tools/obsidian2post.py tools/posts.json [--only SLUG ...]
 
 posts.json lists each source note and the front matter for the post(s) it
 becomes. A note that holds several writeups (one per top-level "# " heading)
-is split by giving a "sections" list instead of a single post.
+is split by giving a "sections" list instead of a single post. --only limits
+a run to the named slugs; without it every listed post is rewritten.
 
 What the converter does to each note:
   * drops the note's first H1 (the post layout prints the title)
-  * removes Obsidian-only blocks (```table-of-contents)
+  * removes Obsidian-only blocks (```table-of-contents) and a "Contents" /
+    "Table of Contents" heading left with nothing under it
   * turns ==highlight== into <mark>, [[link|alias]] into plain text,
     and ![[image.png]] into a normal image copied to assets/img/posts/
-  * applies the "replace" pairs (e.g. live challenge hosts -> <host>)
+  * replaces em and en dashes with "-" (the site uses no long dashes): in
+    text "a <em dash> b" becomes "a - b" and a heading's dash becomes ": "
+    ("Stage 1: Load"); in code only the character changes
+  * applies the "replace" pairs, global and per entry (e.g. live challenge
+    hosts -> <host>)
   * appends the file named by an entry's "append" (site-only extras that
     aren't in the note, so re-running never drops them)
   * wraps the body in {% raw %} so Jinja/f-string braces survive Liquid
@@ -59,12 +65,25 @@ def sections(text):
     return [s for s in out if s[0]]
 
 
+def plain_dashes(line, code=False):
+    """Em/en dashes -> ASCII. In code only the character changes (alignment
+    survives); in text an aside becomes " - ", or ": " in a heading."""
+    if code:
+        return line.replace("—", "-").replace("–", "-")
+    heading = line.lstrip().startswith("#")
+    line = re.sub(r"(?<=\w)–(?=\w)", "-", line)  # ranges and names: 2024–2025, 0x10–0x11, Newton–Raphson
+    return re.sub(r"[ \t]*[—–][ \t]*", ": " if heading else " - ", line)
+
+
 def clean(body, src_dir, replace):
     lines = body.splitlines()
-    # drop Obsidian table-of-contents plugin blocks
+    # drop Obsidian table-of-contents plugin blocks, and the heading they leave behind
     txt = re.sub(r"```table-of-contents.*?```\n?", "", "\n".join(lines), flags=re.S)
+    txt = re.sub(r"^#{1,6}[ \t]+(?:table of )?contents[ \t]*\n(?:[ \t]*\n)*(?:---[ \t]*\n(?:[ \t]*\n)*)?(?=#)",
+                 "", txt + "\n", flags=re.M | re.I)
     out = []
     for line, code in split_fences(txt.splitlines()):
+        line = plain_dashes(line, code)
         if not code:
             line = re.sub(r"==([^=\n]+)==", r"<mark>\1</mark>", line)
             def embed(m):
@@ -119,18 +138,23 @@ def write_post(meta, body):
     return name
 
 
-def main(manifest):
+def main(manifest, only=()):
     cfg = json.loads(Path(manifest).read_text(encoding="utf-8"))
-    replace = [tuple(p) for p in cfg.get("replace", [])]
     POSTS.mkdir(exist_ok=True)
     written = []
     for item in cfg["notes"]:
+        replace = [tuple(p) for p in cfg.get("replace", []) + item.get("replace", [])]
+        slugs = [s["slug"] for s in item["sections"]] if "sections" in item else [item["slug"]]
+        if only and not set(slugs) & set(only):
+            continue
         src = Path(item["source"])
         raw = src.read_text(encoding="utf-8")
         raw = re.sub(r"\A---\n.*?\n---\n", "", raw, flags=re.S)  # note front matter
         if "sections" in item:
             found = dict(sections(raw))
             for sec in item["sections"]:
+                if only and sec["slug"] not in only:
+                    continue
                 key = next((t for t in found if t.startswith(sec["heading"])), None)
                 if key is None:
                     sys.exit(f"section {sec['heading']!r} not found in {src}")
@@ -145,4 +169,8 @@ def main(manifest):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "tools/posts.json")
+    args = sys.argv[1:]
+    only = args[args.index("--only") + 1:] if "--only" in args else []
+    if "--only" in args:
+        args = args[:args.index("--only")]
+    main(args[0] if args else "tools/posts.json", only)

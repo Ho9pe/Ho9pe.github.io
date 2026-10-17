@@ -1,0 +1,8 @@
+{%- comment -%}Prints a number below a million with a thousands comma: 5637 -> 5,637. Usage: {% include thousands.html n=5637 %}{%- endcomment -%}
+{%- assign th_s = include.n | append: '' -%}
+{%- if th_s.size > 3 -%}
+{%- assign th_head = th_s.size | minus: 3 -%}
+{{- th_s | slice: 0, th_head }},{{ th_s | slice: th_head, 3 -}}
+{%- else -%}
+{{- th_s -}}
+{%- endif -%}

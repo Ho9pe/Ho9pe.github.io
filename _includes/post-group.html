@@ -1,0 +1,15 @@
+{%- comment -%}
+  Finds the blog group (from _data/blog.yml) a post belongs to and leaves it in
+  `post_group` (nil when none matches): the first group listing the post's slug
+  under `posts`, otherwise the first group listing its `series`.
+  Usage: {% include post-group.html post=p %}
+{%- endcomment -%}
+{%- assign post_group = nil -%}
+{%- for pg_candidate in site.data.blog.groups -%}
+  {%- if pg_candidate.posts contains include.post.slug -%}{%- assign post_group = pg_candidate -%}{%- break -%}{%- endif -%}
+{%- endfor -%}
+{%- unless post_group -%}
+{%- for pg_candidate in site.data.blog.groups -%}
+  {%- if pg_candidate.series contains include.post.series -%}{%- assign post_group = pg_candidate -%}{%- break -%}{%- endif -%}
+{%- endfor -%}
+{%- endunless -%}

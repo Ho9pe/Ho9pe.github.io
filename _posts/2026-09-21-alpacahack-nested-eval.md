@@ -37,7 +37,7 @@ So whatever we type is evaluated as a Python **expression**, and the *result* is
 
 ### The key insight
 
-Both `eval()` calls run inside `chal.py`'s own module — meaning our expression executes with chal.py's **global namespace** available, including the module-level variable:
+Both `eval()` calls run inside `chal.py`'s own module - meaning our expression executes with chal.py's **global namespace** available, including the module-level variable:
 
 ```python
 prohibited = ["(", ")", "\\", "+", "__"]

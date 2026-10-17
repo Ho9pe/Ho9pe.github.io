@@ -1,0 +1,74 @@
+# Project cards for /projects/ and the home page.
+# `home` lists the three cards the home page shows, in order (by name); a card
+# there uses `home_blurb` when it has one.
+
+home: [TG-CFG, Nibedito, PDP-ParallelAudit]
+
+research:
+  - name: TG-CFG
+    repo: Ho9pe/TG-CFG
+    kind: Research code
+    tag: Thesis paper code
+    feature: true
+    blurb: "The code behind my thesis paper. A staged pipeline that extracts control flow graphs from Windows PE binaries with angr, trains GNN variants and a flat baseline, and runs the temporal evaluation, statistics and explanation-stability analysis. Configs, tests and reproduction notes are included."
+    home_blurb: "The code behind my thesis paper: CFG extraction from Windows PE binaries with angr, GNN variants and a flat baseline, plus the temporal evaluation and explanation-stability analysis."
+    stages: [PE → CFG with angr, train GNN variants + flat baseline, "temporal evaluation, statistics", explanation stability]
+    stack: [Python, PyTorch Geometric, angr]
+  - name: Water body segmentation
+    repo: Ho9pe/WaterbodySegmentation
+    kind: Research code
+    tag: ICCIT 2025
+    blurb: "Reference implementation for our ICCIT 2025 paper: seven deep segmentation architectures and a Dice-weighted ensemble on Sentinel-2 imagery with NDWI-derived masks, refactored from the original notebook into a package with command-line stages."
+    stack: [Python, TensorFlow/Keras]
+  - name: PDP-ParallelAudit
+    repo: Ho9pe/PDP-ParallelAudit
+    kind: Research code
+    tag: coursework
+    blurb: "A password-hash auditing tool for a parallel computing course. It has dictionary and brute-force attacks in serial and OpenMP versions, and MD5 and SHA-1 written from RFC 1321 and RFC 3174 with no crypto libraries, to measure speed-up and throughput."
+    home_blurb: "Password-hash auditing in serial and OpenMP, with MD5 and SHA-1 written from RFC 1321 and RFC 3174 and no crypto libraries, to measure speed-up and throughput."
+    stack: [C, OpenMP]
+
+software:
+  - name: Nibedito
+    repo: Ho9pe/NIBEDITO
+    kind: Software
+    blurb: "A full-stack gift store with catalogue, cart, coupons, PDF invoices and an admin panel. JWT in httpOnly cookies, email activation and a rate-limited, validated API."
+    stack: [Next.js, TypeScript, Express, MongoDB, Docker]
+  - name: University routine manager
+    repo: Ho9pe/Routine_Management
+    kind: Software
+    blurb: "Class routines with separate student, teacher and admin roles: course and credit-hour management, teacher assignment, conflict detection and automated routine generation."
+    stack: [JavaScript, Node.js, JWT]
+  - name: CollabTask
+    repo: Ho9pe/CollabTask-laravel
+    kind: Software
+    blurb: "A collaborative task manager: priorities, due dates and overdue tracking, shared groups with invitations and assigned tasks, and a dashboard of completion stats."
+    stack: [Laravel 11, Tailwind CSS, Alpine.js]
+  - name: yt-sum
+    repo: Ho9pe/yt-sum
+    kind: Software
+    blurb: "Paste a YouTube link and get notes back: the app pulls the video's transcript with youtube-transcript-api and has Gemini summarize the important points."
+    stack: [Python, Streamlit, Gemini API]
+  - name: Discord Gemini bot
+    repo: Ho9pe/Discord-Gemini-Bot
+    kind: Software
+    blurb: "A Discord bot on Gemini 1.5 Flash. It answers DMs and !g prompts in allowed channels, keeps per-user chat history, reads attachments and splits long replies."
+    stack: [JavaScript, discord.js, Gemini API]
+  - name: File Manager
+    repo: Ho9pe/File_Manager
+    kind: Software
+    blurb: "An ad-free, minimalistic Android file manager: browse, copy, rename and delete files and folders, with search, favourites, sharing and file details."
+    stack: [Java, Android 5.0+]
+  - name: Population prediction model
+    repo: Ho9pe/Population-Prediction-Model
+    kind: Software
+    blurb: "Forecasts a city's population from historical data by combining Newton's interpolation, the Newton-Raphson method and curve fitting into one integrated prediction."
+    stack: [Python, NumPy, pandas, matplotlib]
+
+analysis:
+  - title: Dynamic Feedback Management System
+    meta: Dynamic Solution Innovators · Mar 2025
+    text: "Designed a multi-role feedback platform with OTP-verified submission, automated approver assignment and a multi-stage approval workflow. I delivered requirements, use-case, component and ER diagrams, a normalised schema, Figma prototypes, a REST API structure and a five-sprint plan."
+  - title: Information systems analysis of Robi Axiata PLC
+    meta: Team of four · 2025 · 95-page report
+    text: "Analysed a national telecom operator's systems in a four-person team: a feasibility study, stakeholder questionnaires, data-flow models, a weighted evaluation of candidate systems, and a cost-benefit analysis with break-even and ROI projections."

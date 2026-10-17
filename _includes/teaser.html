@@ -1,0 +1,12 @@
+{%- comment -%}
+  Short text for post cards: `teaser` from the front matter, else
+  `teasers.<slug>` in _data/blog.yml, else the first sentence of `summary`.
+  Usage: {% include teaser.html post=p %}
+{%- endcomment -%}
+{%- assign teaser_text = include.post.teaser | default: site.data.blog.teasers[include.post.slug] -%}
+{%- if teaser_text -%}
+{{- teaser_text -}}
+{%- else -%}
+{%- assign teaser_parts = include.post.summary | split: '. ' -%}
+{%- if teaser_parts.size > 1 -%}{{- teaser_parts[0] -}}.{%- else -%}{{- include.post.summary -}}{%- endif -%}
+{%- endif -%}

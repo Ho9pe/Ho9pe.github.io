@@ -16,11 +16,6 @@ tags: ["linux", "elf", "notes"]
 </details>
 
 {% raw %}
-## Table of Contents
-
-
----
-
 ## The Problem: Why PIC?
 
 Shared libraries (.so files) are loaded at different base addresses every time a program runs, especially with ASLR enabled. Code with hardcoded absolute addresses would be wrong at every load.
@@ -29,10 +24,10 @@ Shared libraries (.so files) are loaded at different base addresses every time a
 
 - Every process gets its OWN private copy of .text
 - .text is patched with absolute addresses at load time
-- Wastes RAM — can't share .text between processes
+- Wastes RAM - can't share .text between processes
 
 ```
-mov eax, [0x7f3a2000]       ; hardcoded absolute — only works at this base
+mov eax, [0x7f3a2000]       ; hardcoded absolute - only works at this base
 ```
 
 **WITH PIC (x86-64 approach):**
@@ -57,7 +52,7 @@ GOT address = RIP + encoded_offset   (always true, any base)
 
 ### Global Offset Table (GOT)
 
-A writable table in the data segment. Each slot is 8 bytes holding one absolute address. Code never stores absolute addresses directly — it always goes through the GOT as a middleman.
+A writable table in the data segment. Each slot is 8 bytes holding one absolute address. Code never stores absolute addresses directly - it always goes through the GOT as a middleman.
 
 | Section  |             Purpose             | Filled by | When              |
 |:--------:|:-------------------------------:|:---------:|:----------------- |
@@ -70,7 +65,7 @@ A writable table in the data segment. Each slot is 8 bytes holding one absolute 
 GOT[0]  @ base+0x3fe8  = address of .dynamic section      (linker fills)
 GOT[1]  @ base+0x3ff0  = link_map pointer                 (ld.so fills)
 GOT[2]  @ base+0x3ff8  = ld.so resolver function address  (ld.so fills)
-GOT[n]  @ base+0x4000  = ml_util_func slot             (lazy — first call)
+GOT[n]  @ base+0x4000  = ml_util_func slot             (lazy - first call)
 ```
   
 *GOT[1]* answers "which library is this?"
@@ -89,11 +84,11 @@ After the first call, GOT[n] holds the real function address. JMP goes directly 
 ### .plt Layout (demo)
 
 ```
-; PLT[0] — shared resolver trampoline  (at base+0x1020)
+; PLT[0] - shared resolver trampoline  (at base+0x1020)
 	push [GOT[1]]     ; push link_map  (which library is this?)
 	jmp  [GOT[2]]     ; jump into ld.so resolver
 
-; PLT[n] — per-function stub for ml_util_func (at base+0x1030)
+; PLT[n] - per-function stub for ml_util_func (at base+0x1030)
 	jmp  [GOT[n]]     ; jump to whatever GOT[n] currently holds
 	push 0x0          ; slot index: "I am function #0 in .rela.plt"
 	jmp  PLT[0]       ; fall through to resolver trampoline
@@ -182,7 +177,7 @@ $ gcc driver.c -o driver -L. -lmlpic -Wl,-rpath,. -g
 
 ---
 
-## Stage 1 — Compiler Output (.o file)
+## Stage 1: Compiler Output (.o file)
 
 After Executing `$ gcc ml_main.c -o ml_main.o -c -fPIC -g`
 
@@ -190,7 +185,7 @@ The compiler sees only one .c file in isolation. It has no idea where anything w
 
 1. Emits PLACEHOLDER ZEROS in the instructions
 2. Writes a TO-DO LIST of relocation records for the linker (.rela.text)
-### .rela.text — Linker's To-Do List
+### .rela.text: Linker's To-Do List
 
 ```sh
 $ readelf -r ml_main.o 
@@ -215,18 +210,18 @@ Field meanings:
   
 At the time the CPU executes the instruction, RIP already points to the NEXT instruction (4 bytes ahead). The -4 corrects for this when computing the offset.
 
-### Disassembly — Placeholder Zeros in .text
+### Disassembly: Placeholder Zeros in .text
 
 ```sh
 $ objdump -d -M intel ml_main.o
 ```  
 
 ```asm
-; ml_util_func — self-contained, no globals, NO relocations needed
+; ml_util_func - self-contained, no globals, NO relocations needed
     0x00: ml_util_func:
         ...
 
-; ml_func — calls external function + accesses global → needs relocations
+; ml_func - calls external function + accesses global → needs relocations
     0x0f: ml_func:
         ...
         
@@ -274,11 +269,11 @@ The instruction then dereferences it to get the value.
 
 ---
 
-## Stage 2 — Linker Output (.so file)
+## Stage 2: Linker Output (.so file)
 
 After Executing `$ gcc ml_main.o -o libmlpic.so -shared -fPIC -g`
 
-The linker sees the full picture — all sections, all symbols, final layout.
+The linker sees the full picture - all sections, all symbols, final layout.
 
 It does three things:
 1. Patches all placeholder zeros in .text with real RIP-relative offsets
@@ -347,7 +342,7 @@ Key to Flags:
 
 | Section   | Meaning                                              |
 | --------- | ---------------------------------------------------- |
-| .plt      | PLT stubs — the trampoline code for lazy binding     |
+| .plt      | PLT stubs - the trampoline code for lazy binding     |
 | .plt.got  | Eagerly bound functions (no lazy fallback)           |
 | .text     | Actual code with patched RIP-relative offsets        |
 | .got      | GOT slots for global variables (filled at load time) |
@@ -364,7 +359,7 @@ Key to Flags:
 | R_X86_64_JUMP_SLOT | Write function's runtime address | First call (lazy) into GOT slot at Offset    |
 | R_X86_64_RELATIVE  | \*slot = base + addend           | Load time (internal pointers within library) |
 
-### Linker Math — Patching the Placeholders
+### Linker Math: Patching the Placeholders
 
 ```sh
 $ objdump -d -M intel libmlpic.so  
@@ -397,11 +392,11 @@ $ objdump -d -M intel libmlpic.so
 ```asm
 ...
 
-; ml_util_func — self-contained, no globals, NO relocations needed
+; ml_util_func - self-contained, no globals, NO relocations needed
 0000000000001109 <ml_util_func>:
 ...
 
-; ml_func — calls external function + accesses global
+; ml_func - calls external function + accesses global
 0000000000001118 <ml_func>:
     ...
     
@@ -471,15 +466,15 @@ From Section Header, .got.plt address = 0x3fe8
 - RIP = 0x1026 + 6 = 0x102c
 - reads GOT[2] at 0x3ff8
 - offset = 0x3ff8 - 0x102c = 0x2fcc ✓
-### After Patching — ml_func Disassembly
+### After Patching: ml_func Disassembly
 
-; **CALL** — was 00 00 00 00, now patched to reach PLT[n]
+; **CALL** - was 00 00 00 00, now patched to reach PLT[n]
 
 ```
     112b:       e8 00 ff ff ff          call   1030 <ml_util_func@plt>
 ```
 
-; **MOV myglob** x3 — were rip+0x0, now patched to reach GOT[myglob]
+; **MOV myglob** x3 - were rip+0x0, now patched to reach GOT[myglob]
 
 ```
     1138:       48 8b 05 89 2e 00 00    mov    rax,QWORD PTR [rip+0x2e89]        # 3fc8 <myglob-0x48>
@@ -489,13 +484,13 @@ From Section Header, .got.plt address = 0x3fe8
 
 ### PLT Disassembly
 
-; PLT[0] — resolver trampoline @ 0x1020
+; PLT[0] - resolver trampoline @ 0x1020
 ```
     1020:       push [rip+0x2fca]     → RIP=0x1026, reads 0x1026+0x2fca = 0x3ff0 = GOT[1]
 	1026:       jmp  [rip+0x2fcc]     → RIP=0x102c, reads 0x102c+0x2fcc = 0x3ff8 = GOT[2]
 ```
 
-; PLT[n] — ml_util_func stub @ 0x1030
+; PLT[n] - ml_util_func stub @ 0x1030
 
 ```
 	1030:        jmp  [rip+0x2fca]    → RIP=0x1036, reads 0x1036+0x2fca = 0x4000 = GOT[n]
@@ -503,7 +498,7 @@ From Section Header, .got.plt address = 0x3fe8
 	103b:        jmp  0x1020          → jump to PLT[0] resolver trampoline
 ```
   
-; .plt.got — \_\_cxa_finalize (eagerly bound, no lazy fallback)
+; .plt.got - \_\_cxa_finalize (eagerly bound, no lazy fallback)
 
 ```
 	1040:       jmp  [rip+0x2f7a]    → reads GOT slot @ 0x3fc0 (filled at load time)
@@ -512,7 +507,7 @@ From Section Header, .got.plt address = 0x3fe8
 
 ---
 
-## Stage 3 — Load Time (ld.so)
+## Stage 3: Load Time (ld.so)
 
 ld.so runs before main(). It maps libmlpic.so into memory at a random base address (ASLR), then processes all .rela.dyn entries eagerly.
 
@@ -597,7 +592,7 @@ All offsets (0x1109, 0x3fc8, etc.) came from static analysis of the .so file (ob
     
 - GOT[1] @ 0x7ffff7fbbff0  =  0x7ffff7fbd1d0   (link_map struct)
 - GOT[2] @ 0x7ffff7fbbff8  =  0x7ffff7fda9e0   (ld.so resolver)
-- GOT[n] @ 0x7ffff7fbc000  =  0x7ffff7fb9036   (PLT bounce — NOT resolved yet)
+- GOT[n] @ 0x7ffff7fbc000  =  0x7ffff7fb9036   (PLT bounce - NOT resolved yet)
 
 ### GDB Verification Before Any Call
 
@@ -617,13 +612,13 @@ We saw that myglob variable is filled but the ml_util_func is not resolved
 
 ---
 
-## Stage 4 — First Call: Lazy Binding
+## Stage 4: First Call (Lazy Binding)
 
 ```
 GOT[ml_util_func] @ 0x7ffff7fbc000 = 0x7ffff7fb9036
 ```
 
-`0x7ffff7fb9036` = `base + 0x1036` — that's the `push 0x0` instruction inside `PLT[n]`, right after the `jmp`. The GOT is bouncing back into the PLT. `ml_util_func` is **not resolved yet**.
+`0x7ffff7fb9036` = `base + 0x1036` - that's the `push 0x0` instruction inside `PLT[n]`, right after the `jmp`. The GOT is bouncing back into the PLT. `ml_util_func` is **not resolved yet**.
 
 **Current state**
 
@@ -641,7 +636,7 @@ break *0x7ffff7fb9030
 continue
 ```
 
-This will stop us at the very first instruction of the PLT stub for `ml_util_func` — right when `ml_func` calls it.
+This will stop us at the very first instruction of the PLT stub for `ml_util_func` - right when `ml_func` calls it.
 
 I am using gef with gdb so i can see the instructions easily right now I am at: 
 
@@ -655,11 +650,11 @@ I am using gef with gdb so i can see the instructions easily right now I am at:
 si
 ```
 
-This JMP will read `GOT[ml_util_func]` and jump to whatever is there. We already know it contains `0x7ffff7fb9036` — so it will bounce to `push 0x0` right below.
+This JMP will read `GOT[ml_util_func]` and jump to whatever is there. We already know it contains `0x7ffff7fb9036` - so it will bounce to `push 0x0` right below.
 
 **What `push 0x0` means**
 
-This pushes the **function index** onto the stack. `0x0` means _"I am slot 0 in `.rela.plt`"_. The resolver will read this to know which function to look up — in our case `ml_util_func`.
+This pushes the **function index** onto the stack. `0x0` means _"I am slot 0 in `.rela.plt`"_. The resolver will read this to know which function to look up - in our case `ml_util_func`.
 
 ```gdb
 si
@@ -671,20 +666,20 @@ si
    0x7ffff7fb902c                  nop    DWORD PTR [rax+0x0]
 ```
 
-We're now at `PLT[0]` — the resolver trampoline. Two instructions here 
+We're now at `PLT[0]` - the resolver trampoline. Two instructions here 
 
 ```
 push [rip+0x2fca] → reads 0x7ffff7fbbff0 ← GOT[1] = link_map ptr 
 jmp [rip+0x2fcc] → reads 0x7ffff7fbbff8 ← GOT[2] = ld.so resolver
 ```
 
-**`push GOT[1]`** — pushes the `link_map` pointer. This tells the resolver _which library_ this call is coming from.
+**`push GOT[1]`** - pushes the `link_map` pointer. This tells the resolver _which library_ this call is coming from.
 
-**`jmp GOT[2]`** — jumps into `ld.so`'s resolver function. At this point the stack has:
+**`jmp GOT[2]`** - jumps into `ld.so`'s resolver function. At this point the stack has:
 
 ```
-[rsp]   = link_map   (pushed just now — which library)
-[rsp+8] = 0x0        (pushed earlier — which function slot)
+[rsp]   = link_map   (pushed just now - which library)
+[rsp+8] = 0x0        (pushed earlier - which function slot)
 ```
 
 The resolver has everything it needs to look up `ml_util_func`.
@@ -723,7 +718,7 @@ Verify:
     STEP 2  PLT[n]: jmp [GOT[ml_util]]
             Reads GOT[ml_util] @ 0x7ffff7fbc000 = 0x7ffff7fb9036
             JMP goes to 0x7ffff7fb9036 = PLT[n]+6 (the push instruction)
-            THE BOUNCE — lands right back in PLT past the JMP.
+            THE BOUNCE - lands right back in PLT past the JMP.
 
     STEP 3  push 0x0
             Pushes slot index 0 onto the stack.\
@@ -766,7 +761,7 @@ Verify:
 
 ---
 
-## Stage 5 — Second Call: Direct Jump
+## Stage 5: Second Call (Direct Jump)
 
 Step through the functions and go back to main and catch the second call
 
@@ -794,7 +789,7 @@ Jumps to: ` → 0x7ffff7fb9109 <ml_util_func+0000> push   rbp` directly
 
 ### Why Not Skip the PLT Entirely on Second Call?
 
-The call instruction in ml_func always goes to PLT[n] — the code in .text is never modified. Only the GOT (writable data) changes. This is by design:
+The call instruction in ml_func always goes to PLT[n] - the code in .text is never modified. Only the GOT (writable data) changes. This is by design:
 
 .text must stay read-only so it can be shared between all processes loading the same library.  
 
@@ -809,7 +804,7 @@ Purpose:    Holds runtime addresses of global variables
 
 Written by: ld.so at load time (eager, before main)
 
-Writable:   Yes — always writable (variables need updating)
+Writable:   Yes - always writable (variables need updating)
 
 Protection: With Full RELRO    → read-only after load
             With Partial RELRO → writable forever
@@ -826,7 +821,7 @@ Purpose:    Holds runtime addresses of external functions
 Written by: ld.so (GOT[0,1,2] at load time)
             ld.so resolver (GOT[n] slots lazily on first call)
 
-Writable:   Yes — must be writable for lazy binding to work
+Writable:   Yes - must be writable for lazy binding to work
 
 Protection: With Full RELRO    → all resolved eagerly then read-only
             With Partial RELRO → stays writable forever
@@ -837,7 +832,7 @@ Layout:
     GOT[0]  address of .dynamic section      (linker fills)
     GOT[1]  link_map pointer                 (ld.so fills at load time)
     GOT[2]  ld.so resolver function address  (ld.so fills at load time)
-    GOT[n]  one slot per external function   (lazy — starts as PLT bounce)
+    GOT[n]  one slot per external function   (lazy - starts as PLT bounce)
 
 Before first call:  GOT[n] = PLT[n]+6  (bounce back into PLT)
 After first call:   GOT[n] = real function address
@@ -850,7 +845,7 @@ Purpose:    Trampoline stubs that enable lazy binding
 
 Written by: Linker (created at link time, never modified after)
 
-Writable:   No — read-only, lives in .text region
+Writable:   No - read-only, lives in .text region
 
 Contains:   PLT[0] shared resolver trampoline
             PLT[n] one stub per external function
@@ -880,7 +875,7 @@ Purpose:    Stubs for functions that are resolved at load time
 
 Written by: Linker (created at link time)
 
-Writable:   No — read-only
+Writable:   No - read-only
 
 Contains:   Compact 2-instruction stubs (no lazy fallback needed)
 
@@ -889,8 +884,8 @@ Layout (per function):
     nop               ← padding (no push/jmp PLT[0] needed)
 
 Difference from .plt:
-    .plt      has 3 instructions — jmp + push index + jmp PLT[0]
-    .plt.got  has 2 instructions — jmp + nop
+    .plt      has 3 instructions - jmp + push index + jmp PLT[0]
+    .plt.got  has 2 instructions - jmp + nop
     Because .plt.got functions are already resolved, the bounce
     fallback is unnecessary.
 ```

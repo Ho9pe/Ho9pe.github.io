@@ -1,0 +1,118 @@
+---
+layout: page
+title: Research
+permalink: /research/
+eyebrow: 1 journal paper under review · 3 IEEE conference papers
+lede: Machine learning for systems security, with a focus on whether learned detectors survive real-world change.
+actions:
+  - { label: Google Scholar, social: scholar, icon: external }
+  - { label: CV, cv: true, icon: download }
+---
+<section class="band" aria-labelledby="h-thesis">
+  <div class="wrap tight stack">
+    <div class="thesis">
+      <div class="thesis-text">
+        <div class="badges"><span class="badge warm">Under review · JISA</span><span class="badge">Undergraduate thesis</span></div>
+        <h2 id="h-thesis">Temporal Generalization and Explanation Stability of Control Flow Graph Neural Networks for Malware Detection</h2>
+        <p><span class="me">Md. Asif Sajeed</span>, Md. Nazrul Islam Mondal, Md Ashraful Hossen Akash · under review at the <em>Journal of Information Security and Applications</em></p>
+        <div class="btn-row sm">
+          <a class="btn btn-sm" href="https://arxiv.org/abs/2609.24280">arXiv:2609.24280{% include icon.html name="external" px=13 %}</a>
+          <a class="btn btn-sm" href="https://github.com/Ho9pe/TG-CFG">Code · TG-CFG{% include icon.html name="external" px=13 %}</a>
+        </div>
+        <p class="abstract">Malware detectors are usually tested on a random split of samples from one period, which says little about how they behave on the next year's binaries. I built a fully static pipeline that lifts Windows PE files into control flow graphs with angr and encodes every basic block. I then trained twelve graph neural network variants and a flat, topology-free baseline on samples from 2024-2025 and scored them once on a disjoint 2026 corpus.</p>
+      </div>
+      <figure class="thesis-fig">{% include rank-reversal.html %}</figure>
+    </div>
+
+    <ol class="pipeline" aria-label="Pipeline">
+      <li><span class="step">01 · Input{% include icon.html name="arrow-right" px=14 %}</span><span class="what">Windows PE binaries</span></li>
+      <li><span class="step">02 · Lift{% include icon.html name="arrow-right" px=14 %}</span><span class="what">CFGs with angr</span></li>
+      <li><span class="step">03 · Encode{% include icon.html name="arrow-right" px=14 %}</span><span class="what">Every basic block</span></li>
+      <li><span class="step">04 · Train · 2024-25{% include icon.html name="arrow-right" px=14 %}</span><span class="what">12 GNNs + flat baseline</span></li>
+      <li><span class="step">05 · Test once · 2026</span><span class="what">Disjoint 2026 corpus</span></li>
+    </ol>
+
+    <div class="stack sm" style="gap: 16px">
+      <h3 class="label">Key findings</h3>
+      <div class="card-grid wide">
+        <div class="card r3"><div class="card-kicker"><span class="num">01</span><span class="val">0.932 → 0.807</span></div><p class="card-title md">Rank reversal</p><p class="card-text">The flat baseline was among the best in-distribution models (AUC 0.932) but among the worst after the time boundary (0.807), while PNA held 0.879.</p></div>
+        <div class="card r3"><div class="card-kicker"><span class="num">02</span><span class="val">Friedman p = 0.0006</span></div><p class="card-title md">The message-passing operator matters</p><p class="card-text">Operator choice significantly changed robustness. Recalibration did not fix the gap, and ensembling fragile operators did not replace choosing a robust one.</p></div>
+        <div class="card r3"><div class="card-kicker"><span class="num">03</span><span>GNNExplainer</span></div><p class="card-title md">Explanations are architecture-specific</p><p class="card-text">GNNExplainer attributions did not drift over time, but two architectures agreed on important blocks only at chance level.</p></div>
+        <div class="card r3"><div class="card-kicker"><span class="num">04</span><span>CFGNet-v2</span></div><p class="card-title md">A design derived from the findings</p><p class="card-text">CFGNet-v2 matched the best searched operator without any search.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="h-pubs">
+  <div class="wrap tight stack" style="gap: 32px">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Publications</p>
+        <h2 id="h-pubs" class="sec-title sm">Papers</h2>
+      </div>
+      <a class="more" href="{{ site.social.scholar }}">Full list on Google Scholar{% include icon.html name="external" %}</a>
+    </div>
+    <ol class="pubs">
+      <li>
+        <div class="pub-when"><span class="y">2026</span><span class="v">Journal · JISA</span></div>
+        <div class="pub-body">
+          <div class="badges"><span class="badge warm">Under review</span><span class="badge cool">First author</span></div>
+          <h3>Temporal Generalization and Explanation Stability of Control Flow Graph Neural Networks for Malware Detection</h3>
+          <p><span class="me">Md. Asif Sajeed</span>, M. N. I. Mondal, and M. A. H. Akash · <em>Journal of Information Security and Applications</em>, 2026</p>
+          <div class="pub-links"><a class="pill" href="https://arxiv.org/abs/2609.24280">Preprint</a><a class="pill" href="https://github.com/Ho9pe/TG-CFG">Code</a></div>
+        </div>
+      </li>
+      <li>
+        <div class="pub-when"><span class="y">2026</span><span class="v">IEEE QPAIN</span></div>
+        <div class="pub-body">
+          <h3>An Explainable Deep Learning Framework for Multi-Class Alzheimer's Diagnosis With Multi-Scale CNN</h3>
+          <p>M. A. H. Akash, S. Afroge, <span class="me">Md. Asif Sajeed</span>, M. Barkullah, and A. Khayer · <em>IEEE 2nd International Conference on Quantum Photonics, Artificial Intelligence &amp; Networking (QPAIN)</em>, Chittagong, 2026</p>
+          <p class="note">A multi-scale CNN for four-stage Alzheimer's classification from structural MRI, ensembled with Xception and ResNet50. Predictions are explained with Grad-CAM, Integrated Gradients and LIME, and the model is deployed as a lightweight Streamlit app.</p>
+          <div class="pub-links"><a class="pill" href="https://doi.org/10.1109/QPAIN69676.2026.11545771">DOI</a></div>
+        </div>
+      </li>
+      <li>
+        <div class="pub-when"><span class="y">2025</span><span class="v">IEEE ICCIT</span></div>
+        <div class="pub-body">
+          <div class="badges"><span class="badge cool">First author</span></div>
+          <h3>Memory-Efficient Deep Learning Architectures for Water Body Segmentation in Satellite Imagery: A Comparative Analysis and Ensemble Approach</h3>
+          <p><span class="me">Md. Asif Sajeed</span>, S. Afroge, M. A. H. Akash, A. Khayer, and A. Al Mamun · <em>28th International Conference on Computer and Information Technology (ICCIT)</em>, IEEE, Cox's Bazar, Dec 2025</p>
+          <p class="note">A comparison of seven segmentation architectures on Sentinel-2 imagery, trading accuracy against parameter count, plus a Dice-weighted ensemble and a compact U-Net that cuts parameters substantially while staying competitive.</p>
+          <div class="pub-links"><a class="pill" href="https://doi.org/10.1109/ICCIT68739.2025.11491634">DOI</a><a class="pill" href="https://github.com/Ho9pe/WaterbodySegmentation">Code</a></div>
+        </div>
+      </li>
+      <li>
+        <div class="pub-when"><span class="y">2025</span><span class="v">IEEE ICCIT</span></div>
+        <div class="pub-body">
+          <h3>Transformer-Based Multi-Label Disease Prediction from Radiology Reports</h3>
+          <p>A. Khayer, S. Afroge, A. Al Mamun, <span class="me">Md. Asif Sajeed</span>, and M. A. H. Akash · <em>28th International Conference on Computer and Information Technology (ICCIT)</em>, IEEE, Cox's Bazar, Dec 2025</p>
+          <div class="pub-links"><a class="pill" href="https://doi.org/10.1109/ICCIT68739.2025.11491786">DOI</a></div>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="band band-soft" aria-labelledby="h-exp">
+  <div class="wrap tight stack" style="gap: 48px">
+    <div class="stack sm">
+      <div>
+        <p class="eyebrow" style="margin-bottom: 12px">Experience</p>
+        <h2 id="h-exp" class="sec-title sm">Research experience</h2>
+      </div>
+      <div class="card-grid wide">
+        <div class="card r3"><span class="card-foot">2025 - 2026 · RUET</span><h3 class="card-title md">Undergraduate thesis: graph neural networks for malware detection</h3><p class="card-text">Supervisor: Prof. Dr. Md. Nazrul Islam Mondal · External examiner: Md. Azmain Yakin Srizon · Python, PyTorch Geometric, angr</p></div>
+        <div class="card r3"><span class="card-foot">2024 - 2026 · RUET</span><h3 class="card-title md">Undergraduate research group lead</h3><p class="card-text">Supervisor: Shyla Afroge · Led four CNN and NLP projects across remote sensing, clinical text and medical imaging, three of which were published in IEEE proceedings. I coordinated experimental design, division of work and manuscript preparation.</p></div>
+      </div>
+    </div>
+    <div class="stack sm">
+      <h2 class="h-sub">Skills</h2>
+      <div class="card-grid" style="--card-gap: 16px">
+        <div class="card r3" style="padding: 24px"><h3 class="card-title sm">Machine learning</h3><p class="card-text">Graph neural networks, deep learning, explainable AI, NLP, computer vision</p><ul class="chips"><li>PyTorch</li><li>PyTorch Geometric</li><li>scikit-learn</li><li>LightGBM</li><li>NumPy</li><li>pandas</li></ul></div>
+        <div class="card r3" style="padding: 24px"><h3 class="card-title sm">Security</h3><p class="card-text">Malware analysis, reverse engineering, static and dynamic binary analysis, digital forensics, web exploitation</p><ul class="chips"><li>IDA</li><li>Ghidra</li><li>angr</li><li>x64dbg</li><li>Volatility 3</li><li>Wireshark</li><li>pwntools</li></ul></div>
+        <div class="card r3" style="padding: 24px"><h3 class="card-title sm">Programming</h3><p class="card-text">I practice competitive programming on Codeforces and LeetCode.</p><ul class="chips"><li>Python</li><li>C</li><li>C++</li><li>x86/x64 assembly</li><li>JavaScript/TypeScript</li><li>PHP</li><li>SQL</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>

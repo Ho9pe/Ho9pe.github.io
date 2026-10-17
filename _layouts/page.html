@@ -1,12 +1,32 @@
 ---
 layout: default
 ---
-<article class="page">
-  <header class="page-head">
-    <h1>{{ page.title }}</h1>
-    {% if page.lede %}<p class="lede">{{ page.lede }}</p>{% endif %}
-  </header>
-  <div class="prose">
-{{ content }}
+{%- comment -%}
+  Section pages (research, projects, ctf). Front matter:
+    eyebrow: small line above the title
+    lede:    one sentence under the title
+    actions: buttons on the right of the header. Each item has a label plus one
+             of `social: <key in site.social>`, `cv: true` or `href: <url>`, and an
+             optional `icon` (external, download, mail, rss).
+  The page's own content follows as full-width sections.
+{%- endcomment -%}
+<section class="band band-dots page-hero">
+  <div class="wrap">
+    <div class="page-hero-text">
+      {% if page.eyebrow %}<p class="eyebrow">{{ page.eyebrow }}</p>{% endif %}
+      <h1>{{ page.title }}</h1>
+      {% if page.lede %}<p class="lede">{{ page.lede }}</p>{% endif %}
+    </div>
+    {%- if page.actions %}
+    <div class="btn-row sm">
+      {%- for action in page.actions %}
+      {%- if action.social -%}{%- assign action_href = site.social[action.social] -%}
+      {%- elsif action.cv -%}{%- assign action_href = site.cv_pdf | relative_url -%}
+      {%- else -%}{%- assign action_href = action.href -%}{%- endif %}
+      <a class="btn btn-sm" href="{{ action_href }}">{{ action.label }}{% if action.icon %}{% include icon.html name=action.icon px=13 %}{% endif %}</a>
+      {%- endfor %}
+    </div>
+    {%- endif %}
   </div>
-</article>
+</section>
+{{ content }}

@@ -2,77 +2,220 @@
 layout: default
 title: Md Asif Sajeed
 ---
-<section class="hero">
-  <img class="hero-photo" src="{{ '/assets/img/profile.jpg' | relative_url }}" alt="Portrait of Md Asif Sajeed" width="200" height="200">
-  <div>
-    <h1>Md Asif Sajeed</h1>
-    <p class="role">Offensive security · Reverse engineering & DFIR · ML for systems security</p>
-    <p class="intro">I'm a Computer Science &amp; Engineering graduate from RUET, Bangladesh. My research asks whether machine-learning malware detectors keep working once the world moves on, and in my spare time I reverse binaries and play CTFs.</p>
-    <ul class="links">
-      <li><a class="btn primary" href="{{ site.cv_pdf | relative_url }}">Download CV</a></li>
-      <li><a class="btn" href="mailto:{{ site.author.email }}">Email</a></li>
-      <li><a class="btn" href="{{ site.social.scholar }}">Google Scholar</a></li>
-      <li><a class="btn" href="{{ site.social.github }}">GitHub</a></li>
-      <li><a class="btn" href="{{ site.social.linkedin }}">LinkedIn</a></li>
-      <li><a class="btn" href="{{ site.social.htb }}">Hack The Box</a></li>
+{%- assign blog = site.data.blog -%}
+<section class="band band-dots">
+  <div class="wrap hero">
+    <div class="hero-text">
+      <p class="status-pill">Open to fully funded PhD positions starting in 2027</p>
+      <div class="hero-name">
+        <h1>Md Asif Sajeed</h1>
+        <p class="role">Offensive security · Reverse engineering &amp; DFIR · ML for systems security</p>
+      </div>
+      <p class="intro">I'm a Computer Science &amp; Engineering graduate from RUET, Bangladesh. My research asks whether machine-learning malware detectors keep working once the world moves on, and in my spare time I reverse binaries and play CTFs.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="{{ site.cv_pdf | relative_url }}">Download CV{% include icon.html name="download" %}</a>
+        <a class="btn" href="mailto:{{ site.author.email }}">{% include icon.html name="mail" %}Email me</a>
+      </div>
+      <ul class="profiles" aria-label="Profiles">
+        <li><a href="{{ site.social.scholar }}">Google Scholar{% include icon.html name="external" px=13 %}</a></li>
+        <li><a href="{{ site.social.github }}">GitHub{% include icon.html name="external" px=13 %}</a></li>
+        <li><a href="{{ site.social.linkedin }}">LinkedIn{% include icon.html name="external" px=13 %}</a></li>
+        <li><a href="{{ site.social.htb }}">Hack The Box{% include icon.html name="external" px=13 %}</a></li>
+      </ul>
+    </div>
+    <figure class="portrait">
+      <img src="{{ '/assets/img/profile.jpg' | relative_url }}" alt="Portrait of Md Asif Sajeed" width="600" height="600">
+      <figcaption><span>B.Sc. CSE · RUET · 2026</span>CGPA 3.79 / 4.00 · rank 14</figcaption>
+    </figure>
+  </div>
+  <div class="wrap facts-wrap">
+    <dl class="facts">
+      <div class="fact"><dt>Journal paper</dt><dd class="big">Under review</dd><dd>at JISA · arXiv:2609.24280</dd></div>
+      <div class="fact"><dt>IEEE conference papers</dt><dd class="big">3</dd><dd>ICCIT 2025 (two) · QPAIN 2026</dd></div>
+      <div class="fact"><dt>HTB Holmes CTF 2025</dt><dd class="big hot">65 / 65</dd><dd>Solo · 251st of 7,085 teams</dd></div>
+      <div class="fact"><dt>HTB Cyber Apocalypse 2026</dt><dd class="big hot">Top 4%</dd><dd>Solo · 210th of 6,744 teams</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="h-news">
+  <div class="wrap tight split">
+    <div class="side">
+      <p class="eyebrow">Recently</p>
+      <h2 id="h-news" class="h-sub" style="margin-top: 12px">News</h2>
+    </div>
+    <ul class="news main">
+      <li><time>Sep 2026</time><div><span class="kind">Research</span>Preprint on arXiv: <a href="https://arxiv.org/abs/2609.24280"><em>Temporal Generalization and Explanation Stability of Control Flow Graph Neural Networks for Malware Detection</em></a>, now under review at the <em>Journal of Information Security and Applications</em>.</div></li>
+      <li><time>Sep 2026</time><div><span class="kind ctf">CTF</span>HTB Holmes CTF 2026: 433rd of 5,637 teams, solo. <a href="{{ '/blog/htb-ironfeather/' | relative_url }}">IronFeather writeup</a></div></li>
+      <li><time>Aug 2026</time><div><span class="kind milestone">Milestone</span>Graduated with a B.Sc. in Computer Science &amp; Engineering from RUET.</div></li>
+      <li><time>Jul 2026</time><div><span class="kind ctf">CTF</span>HTB Cyber Apocalypse 2026: 120 of 136 challenges, 210th of 6,744 teams, solo. <a href="{{ '/blog/cyber-apocalypse-2026-recap/' | relative_url }}">Recap</a></div></li>
+      <li><time>Jun 2026</time><div><span class="kind">Research</span>Our explainable multi-scale CNN for Alzheimer's diagnosis appeared in the IEEE QPAIN 2026 proceedings.</div></li>
+      <li><time>Dec 2025</time><div><span class="kind">Research · CTF</span>Two papers presented at IEEE ICCIT 2025, including my first first-author paper. HTB University CTF 2025 with team RUET: 134th of 1,014.</div></li>
+      <li><time>Sep 2025</time><div><span class="kind ctf">CTF</span>HTB Holmes CTF 2025: all 65 challenges solved solo, 251st of 7,085 teams. <a href="{{ '/blog/holmes-ctf-2025-recap/' | relative_url }}">Recap</a></div></li>
     </ul>
   </div>
 </section>
 
-<section class="section two-col">
-  <div class="prose">
-    <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin:0 0 14px;">About</h2>
-    <p>I graduated from Rajshahi University of Engineering &amp; Technology (RUET) in August 2026, ranked 14th in my cohort with a CGPA of 3.79/4.00. I work where cybersecurity meets machine learning. My undergraduate thesis built graph-neural-network malware detectors from binary control flow graphs, then tested them on malware collected a year later. The model that looked best on the usual benchmark was among the first to break, and that finding is now a <a href="{{ '/research/' | relative_url }}">journal paper under review</a>.</p>
-    <p>Before the thesis I led a four-person undergraduate research group whose work on satellite imagery, clinical text and medical imaging produced three IEEE conference papers. Outside research I analyse malware, reverse engineer binaries and play CTFs, mostly solo on Hack The Box, and I <a href="{{ '/blog/' | relative_url }}">write up</a> the challenges I learn the most from. At the moment I'm working through <em>Practical Malware Analysis</em> and <em>Hands-On Machine Learning</em>.</p>
-    <p>I'm looking for <strong>fully funded PhD positions starting in 2027</strong>. I'm also open to roles in security research, machine learning and software engineering.</p>
-  </div>
-  <div>
-    <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin:0 0 14px;">Research interests</h2>
-    <ul class="chips">
-      <li>ML for systems security</li>
-      <li>Malware detection under distribution shift</li>
-      <li>Binary analysis &amp; reverse engineering</li>
-      <li>Explainability of security models</li>
-      <li>DFIR &amp; malware analysis</li>
-      <li>Fuzzing &amp; vulnerability discovery</li>
-    </ul>
-    <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin:28px 0 14px;">Education &amp; experience</h2>
-    <ul class="timeline">
-      <li><div class="t-head"><strong>B.Sc. in Computer Science &amp; Engineering</strong><span class="when">2022 – 2026</span></div>
-        <div class="sub">RUET · CGPA 3.79/4.00, rank 14 · Thesis supervised by Prof. Dr. Md. Nazrul Islam Mondal</div></li>
-      <li><div class="t-head"><strong>Undergraduate Research Group Lead</strong><span class="when">2024 – 2026</span></div>
-        <div class="sub">RUET · supervised by Shyla Afroge · three IEEE conference papers</div></li>
-      <li><div class="t-head"><strong>Member, Hidden Investigations</strong><span class="when">2025 – now</span></div>
-        <div class="sub">CTF and security community · malware analysis and reverse engineering</div></li>
-      <li><div class="t-head"><strong>Industrial Trainee, Dynamic Solution Innovators</strong><span class="when">Mar 2025</span></div>
-        <div class="sub">Dhaka · designed a role-based feedback management system, from requirements to sprint plan</div></li>
-    </ul>
-  </div>
-</section>
-
-<section class="section">
-  <h2>News</h2>
-  <ul class="news">
-    <li><time>Sep 2026</time><span>Preprint on arXiv: <a href="https://arxiv.org/abs/2609.24280"><em>Temporal Generalization and Explanation Stability of Control Flow Graph Neural Networks for Malware Detection</em></a>, now under review at the <em>Journal of Information Security and Applications</em>.</span></li>
-    <li><time>Sep 2026</time><span>HTB Holmes CTF 2026: 433rd of 5,637 teams, solo.</span></li>
-    <li><time>Aug 2026</time><span>Graduated with a B.Sc. in Computer Science &amp; Engineering from RUET.</span></li>
-    <li><time>Jul 2026</time><span>HTB Cyber Apocalypse 2026: 120 of 136 challenges, 210th of 6,744 teams, solo. <a href="{{ '/blog/cyber-apocalypse-2026-recap/' | relative_url }}">Recap</a></span></li>
-    <li><time>Jun 2026</time><span>Our explainable multi-scale CNN for Alzheimer's diagnosis appeared in the IEEE QPAIN 2026 proceedings.</span></li>
-    <li><time>Dec 2025</time><span>Two papers presented at IEEE ICCIT 2025, including my first first-author paper. HTB University CTF 2025 with team RUET: 134th of 1,014.</span></li>
-    <li><time>Sep 2025</time><span>HTB Holmes CTF 2025: all 65 challenges solved solo, 251st of 7,085 teams. <a href="{{ '/blog/holmes-ctf-2025-recap/' | relative_url }}">Recap</a></span></li>
-  </ul>
-</section>
-
-<section class="section">
-  <h2>Latest writing</h2>
-  <div class="cards">
-    {% for post in site.posts limit: 6 %}
-    <article class="card">
-      <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
-      {% if post.summary %}<p>{{ post.summary }}</p>{% endif %}
-      <div class="meta">{{ post.date | date: '%-d %b %Y' }}{% if post.series %} · {{ post.series }}{% endif %}</div>
+<section class="band" aria-labelledby="h-research">
+  <div class="wrap stack">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">01 / Research</p>
+        <h2 id="h-research" class="sec-title">Do learned detectors survive real-world change?</h2>
+      </div>
+      <a class="more" href="{{ '/research/' | relative_url }}">Research &amp; publications{% include icon.html name="arrow-right" %}</a>
+    </div>
+    <article class="feature">
+      <div class="feature-body">
+        <p class="label">Undergraduate thesis · journal paper under review</p>
+        <h3>Temporal Generalization and Explanation Stability of Control Flow Graph Neural Networks for Malware Detection</h3>
+        <p class="authors"><span class="me">Md. Asif Sajeed</span>, Md. Nazrul Islam Mondal, Md Ashraful Hossen Akash</p>
+        <p>Malware detectors are usually tested on a random split of samples from one period, which says little about how they behave on the next year's binaries. I lifted Windows PE files into control flow graphs with angr, trained twelve graph neural network variants and a flat, topology-free baseline on samples from 2024-2025, and scored them once on a disjoint 2026 corpus.</p>
+        <div class="btn-row sm">
+          <a class="btn btn-sm" href="https://arxiv.org/abs/2609.24280">arXiv:2609.24280{% include icon.html name="external" px=13 %}</a>
+          <a class="btn btn-sm" href="https://github.com/Ho9pe/TG-CFG">Code · TG-CFG{% include icon.html name="external" px=13 %}</a>
+        </div>
+      </div>
+      <figure class="feature-fig">{% include rank-reversal.html %}</figure>
     </article>
-    {% endfor %}
+    <div class="stack sm" style="gap: 8px">
+      <p class="label">Conference papers · IEEE</p>
+      <ul class="paper-rows">
+        <li><span class="venue">ICCIT 2025</span><span class="title">Memory-Efficient Deep Learning Architectures for Water Body Segmentation in Satellite Imagery: A Comparative Analysis and Ensemble Approach<small>First author</small></span><span class="links"><a href="https://doi.org/10.1109/ICCIT68739.2025.11491634">DOI</a><a href="https://github.com/Ho9pe/WaterbodySegmentation">Code</a></span></li>
+        <li><span class="venue">ICCIT 2025</span><span class="title">Transformer-Based Multi-Label Disease Prediction from Radiology Reports</span><span class="links"><a href="https://doi.org/10.1109/ICCIT68739.2025.11491786">DOI</a></span></li>
+        <li><span class="venue">QPAIN 2026</span><span class="title">An Explainable Deep Learning Framework for Multi-Class Alzheimer's Diagnosis With Multi-Scale CNN</span><span class="links"><a href="https://doi.org/10.1109/QPAIN69676.2026.11545771">DOI</a></span></li>
+      </ul>
+    </div>
   </div>
-  <p style="margin-top:18px;"><a href="{{ '/blog/' | relative_url }}">All {{ site.posts.size }} posts →</a></p>
+</section>
+
+<section class="band" aria-labelledby="h-writing">
+  <div class="wrap stack">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">02 / Writing</p>
+        <h2 id="h-writing" class="sec-title">Deep dives, writeups and notes</h2>
+      </div>
+      <a class="more" href="{{ '/blog/' | relative_url }}">All {{ site.posts.size }} posts{% include icon.html name="arrow-right" %}</a>
+    </div>
+    <div class="card-grid">
+      {%- for slug in blog.home_featured -%}
+      {%- assign fp = site.posts | where: 'slug', slug | first -%}
+      {%- if fp %}{% include post-card.html post=fp %}{% endif -%}
+      {%- endfor %}
+    </div>
+    <div class="tiles">
+      {%- for g in blog.groups -%}
+      {%- unless g.tile -%}{%- continue -%}{%- endunless -%}
+      {%- assign tile_count = 0 -%}
+      {%- assign tile_latest = nil -%}
+      {%- for p in site.posts -%}
+        {%- include post-group.html post=p -%}
+        {%- if post_group.label == g.label -%}
+          {%- assign tile_count = tile_count | plus: 1 -%}
+          {%- unless tile_latest -%}{%- assign tile_latest = p -%}{%- endunless -%}
+        {%- endif -%}
+      {%- endfor %}
+      <a class="tile" href="{{ '/blog/' | relative_url }}#{{ g.label | slugify }}">
+        <span class="tile-head"><span class="tile-name">{{ g.label }}</span><span class="tile-count">{{ tile_count }}</span></span>
+        <span class="tile-text">{{ g.tile }}</span>
+        {%- if tile_latest %}
+        <span class="tile-foot">latest · {{ tile_latest.title | split: ':' | first | truncate: 34 }}</span>
+        {%- endif %}
+      </a>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="band band-soft" aria-labelledby="h-ctf">
+  <div class="wrap stack">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">03 / CTF</p>
+        <h2 id="h-ctf" class="sec-title">Mostly solo, as Despair</h2>
+        <p class="sec-lede">I play solo under the team name Despair, and with team RUET for university events. Member of Hidden Investigations since December 2025.</p>
+      </div>
+      <a class="more" href="{{ '/ctf/' | relative_url }}">All results{% include icon.html name="arrow-right" %}</a>
+    </div>
+    <div class="card-grid sm">
+      <div class="stat"><span class="stat-event">HTB Holmes CTF 2025</span><span class="stat-big">65 / 65</span><span class="stat-detail">Every challenge solved, solo</span><div class="meter" role="img" aria-label="Ahead of 96% of teams"><span style="width: 96%"></span></div><span class="stat-rank">251st of 7,085 · ahead of 96%</span></div>
+      <div class="stat"><span class="stat-event">HTB Cyber Apocalypse 2026</span><span class="stat-big">Top 4%</span><span class="stat-detail">120 / 136 solved, solo</span><div class="meter" role="img" aria-label="Ahead of 96% of teams"><span style="width: 96%"></span></div><span class="stat-rank">210th of 6,744 · ahead of 96%</span></div>
+      <div class="stat"><span class="stat-event">HTB Holmes CTF 2026</span><span class="stat-big">433rd</span><span class="stat-detail">51 / 111 solved, solo</span><div class="meter" role="img" aria-label="Ahead of 92% of teams"><span style="width: 92%"></span></div><span class="stat-rank">of 5,637 · ahead of 92%</span></div>
+      <div class="stat"><span class="stat-event">HTB University CTF 2025</span><span class="stat-big">134th</span><span class="stat-detail">31 / 34 solved with team RUET</span><div class="meter" role="img" aria-label="Ahead of 86% of teams"><span style="width: 86%"></span></div><span class="stat-rank">of 1,014 · ahead of 86%</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="h-projects">
+  <div class="wrap stack">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">04 / Projects</p>
+        <h2 id="h-projects" class="sec-title">Research code and things I've built</h2>
+      </div>
+      <a class="more" href="{{ '/projects/' | relative_url }}">All projects{% include icon.html name="arrow-right" %}</a>
+    </div>
+    <div class="card-grid">
+      {%- assign all_projects = site.data.projects.research | concat: site.data.projects.software -%}
+      {%- for name in site.data.projects.home -%}
+      {%- assign proj = all_projects | where: 'name', name | first -%}
+      {%- if proj %}
+      <a class="card r4" href="https://github.com/{{ proj.repo }}">
+        <span class="repo-head"><span>{{ proj.kind }}</span>{% include icon.html name="external" px=18 %}</span>
+        <h3 class="card-title">{{ proj.name }}</h3>
+        <p class="card-text">{{ proj.home_blurb | default: proj.blurb }}</p>
+        <ul class="chips">{% for s in proj.stack %}<li>{{ s }}</li>{% endfor %}</ul>
+      </a>
+      {%- endif -%}
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="h-about">
+  <div class="wrap stack">
+    <div>
+      <p class="eyebrow" style="margin-bottom: 12px">05 / Background</p>
+      <h2 id="h-about" class="sec-title">Where security meets machine learning</h2>
+    </div>
+    <div class="split" style="gap: 48px 64px">
+      <div class="main about-text" style="flex-basis: 480px">
+        <p>I graduated from Rajshahi University of Engineering &amp; Technology (RUET) in August 2026, ranked 14th in my cohort with a CGPA of 3.79/4.00. My undergraduate thesis built graph-neural-network malware detectors from binary control flow graphs, then tested them on malware collected a year later. The model that looked best on the usual benchmark was among the first to break, and that finding is now a <a href="{{ '/research/' | relative_url }}">journal paper under review</a>.</p>
+        <p>Before the thesis I led a four-person undergraduate research group whose work on satellite imagery, clinical text and medical imaging produced three IEEE conference papers. Outside research I analyse malware, reverse engineer binaries and play CTFs, mostly solo on Hack The Box, and I <a href="{{ '/blog/' | relative_url }}">write up</a> the challenges I learn the most from. At the moment I'm working through <em>Practical Malware Analysis</em> and <em>Hands-On Machine Learning</em>.</p>
+        <div class="stack sm" style="gap: 12px; margin-top: 12px">
+          <p class="label">Research interests</p>
+          <ul class="interests">
+            <li>ML for systems security</li>
+            <li>Malware detection under distribution shift</li>
+            <li>Binary analysis &amp; reverse engineering</li>
+            <li>Explainability of security models</li>
+            <li>DFIR &amp; malware analysis</li>
+            <li>Fuzzing &amp; vulnerability discovery</li>
+          </ul>
+        </div>
+      </div>
+      <div class="side stack sm" style="flex-basis: 380px; gap: 12px">
+        <p class="label">Education &amp; experience</p>
+        <ol class="timeline">
+          <li><div class="when">2022 - 2026</div><div class="what">B.Sc. in Computer Science &amp; Engineering</div><div class="sub">RUET · CGPA 3.79/4.00, rank 14 · thesis supervised by Prof. Dr. Md. Nazrul Islam Mondal</div></li>
+          <li><div class="when">2024 - 2026</div><div class="what">Undergraduate Research Group Lead</div><div class="sub">RUET · supervised by Shyla Afroge · three IEEE conference papers</div></li>
+          <li><div class="when">2025 - now</div><div class="what">Member, Hidden Investigations</div><div class="sub">CTF and security community · malware analysis and reverse engineering</div></li>
+          <li><div class="when">Mar 2025</div><div class="what">Industrial Trainee, Dynamic Solution Innovators</div><div class="sub">Dhaka · designed a role-based feedback management system, from requirements to sprint plan</div></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band band-dots contact" aria-labelledby="h-contact">
+  <div class="wrap">
+    <p class="eyebrow">Get in touch</p>
+    <h2 id="h-contact">I'm looking for fully funded PhD positions starting in 2027.</h2>
+    <p>I'm also open to roles in security research, machine learning and software engineering.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="mailto:{{ site.author.email }}">{% include icon.html name="mail" %}{{ site.author.email }}</a>
+      <a class="btn" href="{{ site.cv_pdf | relative_url }}">Download CV{% include icon.html name="download" %}</a>
+    </div>
+  </div>
 </section>

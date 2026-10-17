@@ -25,7 +25,7 @@ We are given a Python script that:
 3. XORs the resulting keystream with the flag
 4. Compares it to a known ciphertext (`expected`)
 
-Our goal is to **recover the flag** by figuring out what the state is after that massive number of iterations — without actually running the loop.
+Our goal is to **recover the flag** by figuring out what the state is after that massive number of iterations - without actually running the loop.
 
 ---
 
@@ -100,7 +100,7 @@ This number has roughly **737,500 digits**. The fastest computers in the world c
 
 ## 4. Mathematical Background
 
-### 4.1 GF(2) — The Field with Two Elements
+### 4.1 GF(2): The Field with Two Elements
 
 GF(2) (also written ℤ/2ℤ) is the simplest possible field, containing only `{0, 1}`:
 
@@ -156,7 +156,7 @@ final_state  =  M^(521**271441)  ·  v₀
 
 where `v₀` is the vector for the initial state `521`.
 
-### 4.5 LFSR Periodicity — The Period Makes Exponents Manageable
+### 4.5 LFSR Periodicity: The Period Makes Exponents Manageable
 
 The `next` function is an **xorshift LFSR** (Linear Feedback Shift Register). Every LFSR has a **period** `T`: after exactly `T` steps, the state returns to where it started. In matrix terms:
 
@@ -170,7 +170,7 @@ This means exponents are periodic:
 M^k  =  M^(k mod T)
 ```
 
-So we only need to compute `k mod T`, which can be done with modular arithmetic in milliseconds — no matter how large `k` is.
+So we only need to compute `k mod T`, which can be done with modular arithmetic in milliseconds - no matter how large `k` is.
 
 ### 4.6 What is the Period T?
 
@@ -186,7 +186,7 @@ For our 521-bit LFSR:
 T  =  2^521 - 1
 ```
 
-This is a **Mersenne-like** number. An LFSR achieves this maximal period when its characteristic polynomial is **primitive** over GF(2) — meaning the matrix `M` generates the full multiplicative group of GF(2^521).
+This is a **Mersenne-like** number. An LFSR achieves this maximal period when its characteristic polynomial is **primitive** over GF(2) - meaning the matrix `M` generates the full multiplicative group of GF(2^521).
 
 > **Note**: 521 is prime, which is a favorable condition for primitivity. The specific shift amounts (105, 53, 337) in this challenge are chosen to produce a primitive polynomial, giving the full period `2^521 - 1`.
 
@@ -228,9 +228,9 @@ Step 6: XOR keystream with expected   →  FLAG
 
 | Step | Naive approach | Smart approach |
 |---|---|---|
-| Running `next` k times | `521^271441` iterations — impossible | — |
-| Reducing exponent | — | `pow(521, 271441, T)` — milliseconds |
-| Matrix exponentiation | — | O(log(k') × n^2.376) — feasible |
+| Running `next` k times | `521^271441` iterations - impossible | - |
+| Reducing exponent | - | `pow(521, 271441, T)` - milliseconds |
+| Matrix exponentiation | - | O(log(k') × n^2.376) - feasible |
 | Total | Heat death of the universe | A few seconds |
 
 ---
@@ -399,7 +399,7 @@ print("[+] Flag:", bytes(flag).decode())
 ## Summary
 
 ```
-Problem:  Apply next() to state=521 exactly 521^271441 times — impossible directly.
+Problem:  Apply next() to state=521 exactly 521^271441 times - impossible directly.
 
 Key Insight #1:  next() is a linear map over GF(2)^521
                  → Represent it as a 521×521 matrix M over GF(2)

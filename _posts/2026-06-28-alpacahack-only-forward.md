@@ -19,7 +19,7 @@ tags: ["pwn"]
 {% raw %}
 ## TL;DR
 
-`vuln()` has two bugs: a **format string bug** (`printf(name)`) used to leak the stack canary, and a **stack buffer overflow** (`read(0, buf, 256)` into a 64-byte buffer) used to overwrite the return address. The binary has **no PIE**, so `win()`'s address is a fixed constant — combining the leak with the overflow lets us jump straight into it and print the flag.
+`vuln()` has two bugs: a **format string bug** (`printf(name)`) used to leak the stack canary, and a **stack buffer overflow** (`read(0, buf, 256)` into a 64-byte buffer) used to overwrite the return address. The binary has **no PIE**, so `win()`'s address is a fixed constant - combining the leak with the overflow lets us jump straight into it and print the flag.
 
 ## 1. Source
 
@@ -50,7 +50,7 @@ void vuln(void) {
 }
 ```
 
-`win()` is unused by any normal path — the goal is to redirect execution into it.
+`win()` is unused by any normal path - the goal is to redirect execution into it.
 
 ## 2. Protections (`checksec`)
 
@@ -61,7 +61,7 @@ NX:         NX enabled
 PIE:        No PIE (0x400000)
 ```
 
-- **Canary present** → a raw overflow crashes unless the canary is known/restored — this is why the format string leak matters.
+- **Canary present** → a raw overflow crashes unless the canary is known/restored - this is why the format string leak matters.
 - **NX enabled** → no stack shellcode; not needed anyway (ret2win).
 - **No PIE** → all addresses are fixed at compile time: `win = 0x4012a4`, `vuln = 0x401384`, `main = 0x401447`.
 
@@ -167,12 +167,12 @@ $ python exploit.py
 Congratulations! Alpaca{REDACTED}
 ```
 
-(Canary differs per run — randomized per-process, so it's leaked fresh each connection.)
+(Canary differs per run - randomized per-process, so it's leaked fresh each connection.)
 
 ## 8. Mitigations
 
-- Never pass user input as a format string — use `printf("%s", name)`.
+- Never pass user input as a format string - use `printf("%s", name)`.
 - Bound the second `read()` to `sizeof(buf)`.
-- Enable PIE — raises the bar even with a leak primitive already present.
+- Enable PIE - raises the bar even with a leak primitive already present.
 - Canaries alone don't stop this: they protect against *blind* overflows, not overflows chained with an info leak.
 {% endraw %}

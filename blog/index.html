@@ -4,30 +4,101 @@ title: Blog
 permalink: /blog/
 description: CTF writeups (AlpacaHack Daily, crackmes.one), event recaps and notes on binaries, Linux internals and learning.
 ---
-{%- assign series_list = "AlpacaHack Daily|crackmes.one|HTB Sherlocks|Malware analysis|CTF recaps|Notes" | split: "|" -%}
-{%- assign tag_list = "pwn|rev|crypto|web|forensics|malware|hardware|windows|linux" | split: "|" -%}
-<header class="page-head">
-  <h1>Blog</h1>
-  <p class="lede">Writeups of challenges I learned the most from, a few event recaps, and notes from my Obsidian vault.</p>
-</header>
-
-<div class="filters" role="group" aria-label="Filter posts">
-  <button type="button" data-tag="all" aria-pressed="true">all</button>
-  {% for s in series_list %}<button type="button" data-tag="{{ s | slugify }}" aria-pressed="false">{{ s }}</button>{% endfor %}
-  {% for t in tag_list %}<button type="button" data-tag="{{ t | slugify }}" aria-pressed="false">#{{ t }}</button>{% endfor %}
-</div>
-
-<ul class="post-list">
-  {% for post in site.posts %}
-  {%- capture tagslugs -%}{{ post.series | slugify }}{% for t in post.tags %} {{ t | slugify }}{% endfor %}{%- endcapture -%}
-  <li data-tags="{{ tagslugs | strip }}">
-    <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%-d %b %Y' }}</time>
-    <div>
-      {% if post.series %}<div class="series">{{ post.series }}</div>{% endif %}
-      <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
-      {% if post.summary %}<p>{{ post.summary }}</p>{% endif %}
-      <ul class="tags">{% for t in post.tags %}<li><a href="#{{ t | slugify }}">{{ t }}</a></li>{% endfor %}</ul>
+{%- comment -%}
+  Groups, topic buttons and the "Start here" row come from _data/blog.yml.
+  Filtering runs in the browser (assets/js/site.js) and keeps the active
+  group/topic in the URL: /blog/#deep-dives, /blog/#pwn, /blog/#alpacahack-daily+pwn.
+{%- endcomment -%}
+{%- assign blog = site.data.blog -%}
+{%- assign first_post = site.posts | last -%}
+<section class="band band-dots page-hero">
+  <div class="wrap">
+    <div class="page-hero-text">
+      <p class="eyebrow">{{ site.posts.size }} posts · since {{ first_post.date | date: '%b %Y' }}</p>
+      <h1>Blog</h1>
+      <p class="lede">Writeups of challenges I learned the most from, a few event recaps, and notes from my Obsidian vault.</p>
     </div>
-  </li>
-  {% endfor %}
-</ul>
+    <a class="btn btn-sm" href="{{ '/feed.xml' | relative_url }}">{% include icon.html name="rss" px=15 %}RSS feed</a>
+  </div>
+  <div class="wrap start-here stack sm">
+    <h2 class="label">Start here · deep dives</h2>
+    <div class="card-grid">
+      {%- for slug in blog.start_here -%}
+      {%- assign sp = site.posts | where: 'slug', slug | first -%}
+      {%- if sp %}{% include post-card.html post=sp %}{% endif -%}
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="wrap blog-body" data-blog>
+  <aside class="filters" aria-label="Filter posts">
+    <div class="filter-block">
+      <label class="label" for="post-search">Search</label>
+      <div class="search">
+        {% include icon.html name="search" px=18 %}
+        <input id="post-search" type="search" placeholder="Title, topic or tool" autocomplete="off">
+      </div>
+    </div>
+    <div class="filter-block">
+      <h2 class="label">Series</h2>
+      <ul class="series-filter">
+        <li><button type="button" data-group-filter="all" aria-pressed="true"><span>All posts</span><span class="n">{{ site.posts.size }}</span></button></li>
+        {%- for g in blog.groups %}
+        {%- assign group_count = 0 -%}
+        {%- for p in site.posts -%}{%- include post-group.html post=p -%}{%- if post_group.label == g.label -%}{%- assign group_count = group_count | plus: 1 -%}{%- endif -%}{%- endfor -%}
+        {%- capture group_aliases -%}{% for s in g.series %}{{ s | slugify }} {% endfor %}{%- endcapture %}
+        <li><button type="button" data-group-filter="{{ g.label | slugify }}" data-aliases="{{ group_aliases | strip }}" aria-pressed="false"><span>{{ g.label }}</span><span class="n">{{ group_count }}</span></button></li>
+        {%- endfor %}
+      </ul>
+    </div>
+    <div class="filter-block">
+      <h2 class="label">Topics</h2>
+      <ul class="topic-filter">
+        {%- for t in blog.topics %}
+        {%- assign topic_count = 0 -%}
+        {%- for p in site.posts -%}{%- if p.tags contains t -%}{%- assign topic_count = topic_count | plus: 1 -%}{%- endif -%}{%- endfor %}
+        <li><button type="button" data-topic-filter="{{ t | slugify }}" aria-pressed="false">#{{ t }}<span class="n">{{ topic_count }}</span></button></li>
+        {%- endfor %}
+      </ul>
+    </div>
+  </aside>
+
+  <div class="posts">
+    <div class="results-bar">
+      <p aria-live="polite" data-results>{{ site.posts.size }} posts, newest first</p>
+      <button type="button" class="clear-btn" data-clear hidden>{% include icon.html name="close" px=14 %}Clear filters</button>
+    </div>
+    <div class="empty" data-empty hidden>
+      <p>No posts match those filters.</p>
+      <p>Try a different topic, or clear the search.</p>
+      <button type="button" class="clear-btn" data-clear>Clear filters</button>
+    </div>
+    {%- assign years = site.posts | group_by_exp: 'p', "p.date | date: '%Y'" -%}
+    {%- for year in years %}
+    <section class="year-group" aria-labelledby="y{{ year.name }}">
+      <div class="year-head"><h2 id="y{{ year.name }}">{{ year.name }}</h2><span data-year-count>{{ year.items.size }} {% if year.items.size == 1 %}post{% else %}posts{% endif %}</span></div>
+      <ol class="post-list">
+        {%- for p in year.items %}
+        {%- include post-group.html post=p -%}
+        {%- capture row_tags -%}{% for t in p.tags %}{{ t | slugify }} {% endfor %}{%- endcapture -%}
+        {%- capture row_search -%}{{ p.title }} {{ p.summary }} {{ p.series }} {{ p.tags | join: ' ' }}{%- endcapture %}
+        <li class="post-row" data-group="{{ post_group.label | slugify }}" data-tags="{{ row_tags | strip }}" data-search="{{ row_search | strip_html | downcase | escape }}">
+          <time datetime="{{ p.date | date_to_xmlschema }}">{{ p.date | date: '%d %b' }}</time>
+          <div class="post-row-body">
+            <div class="post-row-meta">
+              {%- if post_group.deep %}<span class="badge-deep">Deep dive</span>{% endif %}
+              <span class="series">{{ p.series | default: post_group.label }}</span>
+              <span>{% include read-time.html post=p %} min read</span>
+            </div>
+            <h3><a href="{{ p.url | relative_url }}">{{ p.title }}</a></h3>
+            {% if p.summary %}<p>{{ p.summary }}</p>{% endif %}
+            <ul class="tag-list" aria-label="Tags">{% for t in p.tags %}<li><a href="#{{ t | slugify }}">#{{ t }}</a></li>{% endfor %}</ul>
+          </div>
+        </li>
+        {%- endfor %}
+      </ol>
+    </section>
+    {%- endfor %}
+  </div>
+</div>

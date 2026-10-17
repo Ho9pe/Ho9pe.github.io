@@ -1,6 +1,7 @@
 ---
 title: "DPA4Baby: recovering an AES key from power traces"
 date: 2026-01-26 20:00:00 +0600
+series: "Hardware"
 summary: "Correlation power analysis turns a 2^128 key search into 16 × 256 guesses. Hamming-weight predictions, correlated against 10,000 power traces, recover the AES key one byte at a time."
 description: "Correlation power analysis turns a 2^128 key search into 16 × 256 guesses. Hamming-weight predictions, correlated against 10,000 power traces, recover the AES key one byte at a time."
 tags: ["hardware", "crypto"]
@@ -56,7 +57,7 @@ After the first SubBytes, byte *i* of the state is `SBOX[plaintext[i] ⊕ key[i]
 
 For one key byte:
 
-1. For every guess `k` in 0–255, predict the intermediate value of each trace: `v = SBOX[p ⊕ k]`.
+1. For every guess `k` in 0-255, predict the intermediate value of each trace: `v = SBOX[p ⊕ k]`.
 2. Turn the predictions into predicted power: `HW(v)`.
 3. At every time sample, compute the Pearson correlation between the predicted power and the measured power across all traces.
 4. The right guess is the one whose correlation peaks highest, at the moment the device actually handles that byte.
@@ -131,7 +132,7 @@ byte 15: 0x61  corr 0.1055
 
 The key is printable ASCII, and it is the flag: **`DPA4BabyGogoGaga`**. "DPA" is differential power analysis, and "Baby" marks it as the warm-up.
 
-The winning correlations are only 0.08–0.11, which looks weak. But the usual rule of thumb puts the noise floor at about 4/√N, which is 0.04 for 10,000 traces. Every correct byte sits at roughly twice that, and the key decodes to readable text, which confirms it. The run took about nine minutes, almost all of it in the per-sample `np.corrcoef` loop. Computing all 640 correlations at once with matrix operations would cut that to seconds.
+The winning correlations are only 0.08-0.11, which looks weak. But the usual rule of thumb puts the noise floor at about 4/√N, which is 0.04 for 10,000 traces. Every correct byte sits at roughly twice that, and the key decodes to readable text, which confirms it. The run took about nine minutes, almost all of it in the per-sample `np.corrcoef` loop. Computing all 640 correlations at once with matrix operations would cut that to seconds.
 
 ## How devices defend against this
 

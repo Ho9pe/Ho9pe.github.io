@@ -1,0 +1,105 @@
+---
+layout: page
+title: CTF
+permalink: /ctf/
+eyebrow: Despair · RUET · Hidden Investigations
+lede: I mostly play solo under the team name Despair, and with team RUET for university events. Member of Hidden Investigations since December 2025.
+actions:
+  - { label: Hack The Box profile, social: htb, icon: external }
+---
+{%- assign results = site.data.ctf.results -%}
+{%- assign oldest = results | last -%}
+<section class="band" aria-label="Highlights">
+  <div class="wrap tight">
+    <div class="card-grid sm">
+      <div class="stat"><span class="stat-event">HTB Holmes CTF 2025</span><span class="stat-big hot">65 / 65</span><span class="stat-detail">Every challenge solved, solo</span><div class="meter" role="img" aria-label="Ahead of 96% of teams"><span style="width: 96%"></span></div><span class="stat-rank">251st of 7,085 · ahead of 96%</span></div>
+      <div class="stat"><span class="stat-event">HTB Cyber Apocalypse 2026</span><span class="stat-big hot">Top 4%</span><span class="stat-detail">120 / 136 solved, solo</span><div class="meter" role="img" aria-label="Ahead of 96% of teams"><span style="width: 96%"></span></div><span class="stat-rank">210th of 6,744 · ahead of 96%</span></div>
+      <div class="stat"><span class="stat-event">HTB University CTF 2025</span><span class="stat-big">134th</span><span class="stat-detail">31 / 34 solved with team RUET</span><div class="meter" role="img" aria-label="Ahead of 86% of teams"><span style="width: 86%"></span></div><span class="stat-rank">134th of 1,014 · ahead of 86%</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="h-results">
+  <div class="wrap tight stack" style="gap: 28px">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">{{ results.size }} events since {{ oldest.month }} {{ oldest.year }}</p>
+        <h2 id="h-results" class="sec-title sm">Results</h2>
+      </div>
+      <p class="legend"><span class="meter mini" aria-hidden="true" style="width: 40px"><span style="width: 75%"></span></span>share of teams finished ahead of</p>
+    </div>
+    <div class="results-wrap">
+      <table class="results">
+        <thead><tr><th>When</th><th>Event</th><th>Team</th><th>Placement</th><th>Solved / points</th><th><span class="visually-hidden">Writeup</span></th></tr></thead>
+        <tbody>
+          {%- assign by_year = results | group_by: 'year' -%}
+          {%- for yr in by_year %}
+          <tr class="yr"><td colspan="6">{{ yr.name }}</td></tr>
+          {%- for r in yr.items %}
+          <tr>
+            <td class="mono">{{ r.month }}</td>
+            <td class="ev">{{ r.event }}</td>
+            <td>{{ r.team }}</td>
+            <td>
+              <div class="place">
+                <span>{% if r.place %}{{ r.place }}{% else %}{% include ordinal.html n=r.rank %}{% endif %}{% if r.total %} <span class="of">/ {% include thousands.html n=r.total %}</span>{% endif %}{% if r.note %} <span class="of">{{ r.note }}</span>{% endif %}</span>
+                {%- if r.total and r.rank %}
+                {%- assign ahead = r.total | minus: r.rank | times: 100 | divided_by: r.total %}
+                <span class="meter mini" role="img" aria-label="Ahead of {{ ahead }}% of teams"><span style="width: {{ ahead }}%"></span></span>
+                {%- endif %}
+              </div>
+            </td>
+            <td class="mono">{{ r.solved }}</td>
+            <td>{% if r.link %}<a href="{{ r.link.url | relative_url }}">{{ r.link.label }}</a>{% endif %}</td>
+          </tr>
+          {%- endfor %}
+          {%- endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="band band-soft" aria-labelledby="h-practice">
+  <div class="wrap tight stack" style="gap: 28px">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Between events</p>
+        <h2 id="h-practice" class="sec-title sm">Practice</h2>
+        <p class="sec-lede">Between events I work through daily and archive challenges. I write up the ones that teach me something.</p>
+      </div>
+    </div>
+    <div class="card-grid sm">
+      {%- assign alpaca_count = site.posts | where: 'series', 'AlpacaHack Daily' | size -%}
+      {%- assign crackme_count = site.posts | where: 'series', 'crackmes.one' | size %}
+      <a class="card r3" href="{{ '/blog/' | relative_url }}#alpacahack-daily" style="row-gap: 8px; padding: 24px"><span class="card-kicker"><span class="series">{{ alpaca_count }} writeups →</span></span><span class="card-title sm" style="font-size: 18px">AlpacaHack Daily</span><span class="card-text">pwn, rev, crypto and web, one challenge at a time</span></a>
+      <a class="card r3" href="{{ '/blog/' | relative_url }}#crackmes-one" style="row-gap: 8px; padding: 24px"><span class="card-kicker"><span class="series">{{ crackme_count }} writeups →</span></span><span class="card-title sm" style="font-size: 18px">crackmes.one</span><span class="card-text">Windows and Linux reversing, anti-analysis and malware-style puzzles</span></a>
+      <div class="card r3" style="row-gap: 8px; padding: 24px"><span class="card-kicker"><span>progress only</span></span><span class="card-title sm" style="font-size: 18px">CryptoHack</span><span class="card-text">Introduction, modular arithmetic, symmetric and public-key tracks</span></div>
+      <a class="card r3" href="{{ site.social.htb }}" style="row-gap: 8px; padding: 24px"><span class="card-kicker"><span class="series">profile ↗</span></span><span class="card-title sm" style="font-size: 18px">Hack The Box</span><span class="card-text">Labs, Sherlocks and Academy modules</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="h-tools">
+  <div class="wrap tight split" style="gap: 56px 64px">
+    <div class="main stack sm" style="flex-basis: 560px">
+      <h2 id="h-tools" class="h-sub">Toolbox</h2>
+      <dl class="toolbox">
+        <div><dt class="label">Reverse engineering</dt><dd><ul class="chips"><li>IDA</li><li>Ghidra</li><li>x64dbg</li><li>radare2</li><li>angr</li><li>Capstone</li><li>pefile</li></ul></dd></div>
+        <div><dt class="label">Exploitation</dt><dd><ul class="chips"><li>pwntools</li><li>GDB + GEF</li><li>ROPgadget</li><li>Docker for target libc</li></ul></dd></div>
+        <div><dt class="label">DFIR</dt><dd><ul class="chips"><li>Volatility 3</li><li>Wireshark/tshark</li><li>MFTECmd</li><li>RegRipper</li><li>Autopsy</li><li>bulk_extractor</li><li>Get-WinEvent</li></ul></dd></div>
+        <div><dt class="label">Web and offensive</dt><dd><ul class="chips"><li>Burp Suite</li><li>ffuf</li><li>nmap</li><li>hashcat</li><li>John the Ripper</li></ul></dd></div>
+      </dl>
+    </div>
+    <div class="side stack sm" style="flex-basis: 380px">
+      <h2 class="h-sub">Certifications</h2>
+      <ul class="certs">
+        <li><span class="name">Introduction to Graph Neural Networks</span><span class="from">ApX Machine Learning · <time>Aug 2026</time></span></li>
+        <li><span class="name">Assembly Language x86/x64</span><span class="from">Red Team Leaders · <time>Mar 2026</time></span></li>
+        <li><span class="name">Advent of Cyber 2025</span><span class="from">TryHackMe · <time>Dec 2025</time></span></li>
+        <li><span class="name">Machine Learning Specialization</span><span class="from">DeepLearning.AI &amp; Stanford University · <time>Mar 2025</time></span></li>
+        <li><span class="name">Data Science Math Skills</span><span class="from">Duke University · <time>Feb 2025</time></span></li>
+      </ul>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,21 @@
+{%- comment -%}
+  Dot plot of the thesis paper's headline result (AUC). Used on the home and
+  research pages. Positions are on a 0.78-0.96 scale: left = (AUC − 0.78) / 0.18.
+{%- endcomment -%}
+<div class="dotplot">
+  <p class="label">Rank reversal · AUC</p>
+  <div class="dp-row">
+    <div class="dp-label"><span>Flat baseline · in-distribution</span><b>0.932</b></div>
+    <div class="dp-track" aria-hidden="true"><span class="dp-dot" style="left: 84.4%"></span></div>
+  </div>
+  <div class="dp-row">
+    <div class="dp-label"><span>Flat baseline · 2026 corpus</span><b class="drop">0.807</b></div>
+    <div class="dp-track" aria-hidden="true"><span class="dp-dash" style="left: 15%; width: 69.4%"></span><span class="dp-dot ghost" style="left: 84.4%"></span><span class="dp-dot drop" style="left: 15%"></span></div>
+  </div>
+  <div class="dp-row">
+    <div class="dp-label"><span>PNA · 2026 corpus</span><b class="hold">0.879</b></div>
+    <div class="dp-track" aria-hidden="true"><span class="dp-dot hold" style="left: 55%"></span></div>
+  </div>
+  <div class="dp-axis" aria-hidden="true"><span style="left: 11.1%">0.80</span><span style="left: 38.9%">0.85</span><span style="left: 66.7%">0.90</span><span style="left: 94.4%">0.95</span></div>
+  <p class="dp-note">The flat baseline was among the best models in-distribution but among the worst after the time boundary, while PNA held 0.879.</p>
+</div>

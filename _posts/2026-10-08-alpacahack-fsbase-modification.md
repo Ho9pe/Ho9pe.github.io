@@ -23,7 +23,7 @@ Three functions matter:
 
 | Function | What it does                                           |
 | -------- | ------------------------------------------------------ |
-| `win()`  | Runs `cat /flag.txt` — never called normally           |
+| `win()`  | Runs `cat /flag.txt` - never called normally           |
 | `vuln()` | 8-byte buffer, reads **32 bytes** → overflow           |
 | `main()` | Lets you set the FS base register, then calls `vuln()` |
 
@@ -44,24 +44,24 @@ Stack layout in `vuln()`:
 total: 32 bytes  (exactly what read() allows)
 ```
 
-With no PIE, `win()` is at a **fixed address** (`0x4011b6`). This looks like a simple ret2win — except there's a **stack canary** in the way.
+With no PIE, `win()` is at a **fixed address** (`0x4011b6`). This looks like a simple ret2win - except there's a **stack canary** in the way.
 
 ## Step 2 - The Canary Problem
 
 GCC's stack protector inserts this in every protected function:
 
 ```asm
-; prologue — save canary onto stack
+; prologue - save canary onto stack
 mov rax, qword ptr fs:0x28   ; read canary from TLS
 mov [rbp-0x8], rax            ; store it on the stack
 
-; epilogue — verify it survived
+; epilogue - verify it survived
 mov rdx, [rbp-0x8]
 xor rdx, qword ptr fs:0x28   ; compare with original
 jnz __stack_chk_fail          ; mismatch = abort!
 ```
 
-The canary lives at **`fs:0x28`** — meaning address `(fsbase + 0x28)`. Normally `fsbase` points to glibc's Thread Control Block, where the canary is a **random secret** generated at startup. You can't guess it.
+The canary lives at **`fs:0x28`** - meaning address `(fsbase + 0x28)`. Normally `fsbase` points to glibc's Thread Control Block, where the canary is a **random secret** generated at startup. You can't guess it.
 
 ## Step 3 - The FS Base Trick
 
@@ -72,7 +72,7 @@ unsigned long fsbase = strtoul(buf, NULL, 10);
 syscall(SYS_arch_prctl, ARCH_SET_FS, fsbase);  // YOU control where fs points!
 ```
 
-This lets you redirect `fs` to **any user-space address**. So `fs:0x28` becomes `*(your_address + 0x28)` — a value you choose.
+This lets you redirect `fs` to **any user-space address**. So `fs:0x28` becomes `*(your_address + 0x28)` - a value you choose.
 
 **Goal:** point `fsbase + 0x28` at memory containing **known zeros** → canary = `0`.
 
@@ -134,7 +134,7 @@ print(p.recvall().decode())
 
 ## Why `-1` Doesn't Work
 
-Sending `-1` → `strtoul` gives `0xffffffffffffffff` (unsigned wrap) → `arch_prctl` **fails** (kernel address, not allowed) → FS base stays at glibc's real random canary → overflow crashes. That's the "default vuln behavior" the prompt warns about — the bug exists, but you can't exploit it without the fsbase trick.
+Sending `-1` → `strtoul` gives `0xffffffffffffffff` (unsigned wrap) → `arch_prctl` **fails** (kernel address, not allowed) → FS base stays at glibc's real random canary → overflow crashes. That's the "default vuln behavior" the prompt warns about - the bug exists, but you can't exploit it without the fsbase trick.
 
 ## Bonus - What the Flag Hints At
 

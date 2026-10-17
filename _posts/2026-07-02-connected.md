@@ -160,7 +160,7 @@ A convenient approach is to brute-force an 8-byte palindrome:
 a b c d d c b a
 ```
 
-over a small allowed alphabet (printable even ASCII excluding `'B'`). That’s about 4–5 million candidates—fast in Python.
+over a small allowed alphabet (printable even ASCII excluding `'B'`). That’s about 4-5 million candidates - fast in Python.
 
 ### 6.1) Brute-force script
 

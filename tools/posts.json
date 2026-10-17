@@ -49,7 +49,8 @@
       "title": "What Did You Type: from USB keystrokes to decrypted exfiltration",
       "series": "crackmes.one", "platform": "crackmes.one",
       "summary": "Keystrokes in a USB capture lead to a dropper, a reflective loader and a file-stealing agent whose AES keys travel alongside the stolen files.",
-      "tags": ["forensics", "malware", "rev", "windows"]
+      "tags": ["forensics", "malware", "rev", "windows"],
+      "replace": [["(explained in Phase 7)", "(explained under Reversing the Encryption Algorithm)"]]
     },
     {
       "source": "G:/Obsidian-Vault/CS/CTF/crackme/(+) 7. wallpaper.md",
@@ -149,7 +150,11 @@
       "title": "Position-independent code on x86-64: GOT, PLT and lazy binding",
       "series": "Notes", "append": "tools/extras/pic-in-x64-gdb-appendix.md",
       "summary": "Following one global and one function call from the compiler's placeholder zeros, through the linker's offsets and ld.so's relocations, to the first lazy-binding resolve in GDB.",
-      "tags": ["linux", "elf", "notes"]
+      "tags": ["linux", "elf", "notes"],
+      "replace": [
+        ["## Stage 4: First Call: Lazy Binding", "## Stage 4: First Call (Lazy Binding)"],
+        ["## Stage 5: Second Call: Direct Jump", "## Stage 5: Second Call (Direct Jump)"]
+      ]
     },
     {
       "source": "G:/Obsidian-Vault/CS/Learning.md",
@@ -166,6 +171,19 @@
       "series": "HTB Sherlocks", "platform": "HTB Holmes CTF 2026",
       "summary": "A Holmes CTF 2026 Sherlock: a stripped PX4 binary hides a 384-round ARX key derivation. Reimplementing it decrypts the mission store and the flight log, which show the payload release, an injected motor failure and the crash site.",
       "tags": ["rev", "crypto", "forensics"]
+    },
+    {
+      "source": "G:/CTF Stuffs/BLACKHAT/whisper_evidence/WRITEUP.md",
+      "slug": "blackhat-whisper-evidence", "date": "2026-10-17 12:00:00 +0600",
+      "title": "whisper_evidence: an insider undone by their local LLM history",
+      "series": "Black Hat", "platform": "Black Hat CTF",
+      "summary": "A Black Hat forensics challenge: an insider wiped their shell history but not their Ollama prompt history. The prompts give the passphrase, a script in the trash gives the real key derivation, and the encrypted archive gives up the stolen API keys.",
+      "tags": ["forensics", "dfir", "linux"],
+      "replace": [
+        ["(disk-image triage)\n**Artifact:**", "(disk-image triage)  \n**Artifact:**"],
+        ["Ubuntu workstation\n**Theme:**", "Ubuntu workstation  \n**Theme:**"],
+        ["trash files in §9.", "trash files listed under Rabbit holes."]
+      ]
     }
   ]
 }

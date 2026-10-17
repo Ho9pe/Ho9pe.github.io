@@ -1,0 +1,18 @@
+{%- comment -%}
+  Card for a post (home "Writing", blog "Start here", related posts).
+  Usage: {% include post-card.html post=p %}. A cover strip shows when
+  _data/blog.yml has `covers.<slug>`; add `cover=false` to leave it out.
+{%- endcomment -%}
+{%- assign pc_post = include.post -%}
+{%- include post-group.html post=pc_post -%}
+{%- assign pc_cover = site.data.blog.covers[pc_post.slug] -%}
+{%- if include.cover == false -%}{%- assign pc_cover = nil -%}{%- endif -%}
+<a class="card {% if pc_cover %}has-cover r5{% else %}r4{% endif %}" href="{{ pc_post.url | relative_url }}">
+  {%- if pc_cover %}
+  <div class="card-cover" aria-hidden="true">{% for pc_line in pc_cover %}<span>{{ pc_line }}</span>{% endfor %}</div>
+  {%- endif %}
+  <div class="card-kicker"><span class="series{% if post_group.deep %} deep{% endif %}">{{ pc_post.series | default: post_group.label }}</span><span>{% include read-time.html post=pc_post %} min</span></div>
+  <h3 class="card-title">{{ pc_post.title }}</h3>
+  <p class="card-text">{% include teaser.html post=pc_post %}</p>
+  <span class="card-foot">{{ pc_post.date | date: '%-d %b %Y' }}</span>
+</a>

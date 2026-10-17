@@ -1,0 +1,159 @@
+# "At a glance" box in each post's side rail, keyed by post slug (the file name
+# without the date). Kept here rather than in front matter because
+# tools/obsidian2post.py rewrites converted posts. Fields by kind of post:
+#   writeups: Source, Category, Target, Tools
+#   recaps:   Event, Team, Result, Tools or Highlight
+#   notes:    Type, Topic, Covers, Tools
+# A new post with no entry simply has no box.
+
+# ---------- deep dives ----------
+norland-fake-game-malware-analysis:
+  - { k: Type, v: Malware analysis }
+  - { k: Sample, v: "810 MB fake Ren'Py game package" }
+  - { k: Method, v: "Static only, in an isolated Kali VM" }
+  - { k: Tools, v: "strings, Python, VirusTotal" }
+htb-ironfeather:
+  - { k: Source, v: HTB Holmes CTF 2026 }
+  - { k: Category, v: Sherlock · rev and forensics }
+  - { k: Target, v: "PX4 SITL, stripped x86-64 PIE" }
+  - { k: Tools, v: "cryptography, pyulog, pyproj, unicorn" }
+blackhat-whisper-evidence:
+  - { k: Source, v: Black Hat CTF }
+  - { k: Category, v: Forensics · DFIR }
+  - { k: Target, v: "Ubuntu 24.04 workstation capture" }
+  - { k: Tools, v: "find, grep, pyzipper, auditd logs" }
+position-independent-code-x86-64:
+  - { k: Type, v: Notes }
+  - { k: Topic, v: "ELF linking, loading and lazy binding" }
+  - { k: Covers, v: "GOT, PLT, relocations, ld.so" }
+  - { k: Tools, v: "GCC, objdump, readelf, GDB" }
+
+# ---------- AlpacaHack Daily ----------
+alpacahack-flag-printer-20xx:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: pwn }
+  - { k: Target, v: "Python 3.14 server with a write to /proc/self/mem" }
+  - { k: Tools, v: "Python, Docker" }
+alpacahack-xorshift521:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: crypto }
+  - { k: Target, v: "521-bit xorshift PRNG, linear over GF(2)" }
+  - { k: Tools, v: SageMath }
+alpacahack-style-your-alpaca:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: web }
+  - { k: Target, v: "Flask page with a strict CSP, plus an admin bot" }
+  - { k: Tools, v: "Python requests, webhook.site" }
+alpacahack-only-forward:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: pwn }
+  - { k: Target, v: "Non-PIE x86-64 ELF with a stack canary" }
+  - { k: Tools, v: "pwntools, checksec" }
+alpacahack-no-win-func:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: pwn }
+  - { k: Target, v: "x86-64 ELF, NX on, no canary" }
+  - { k: Tools, v: "pwntools, ROPgadget, GDB, Docker" }
+alpacahack-what-is-my-pointer:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: pwn · heap }
+  - { k: Target, v: "glibc 2.39 on Ubuntu 24.04" }
+  - { k: Tools, v: "GDB with GEF" }
+alpacahack-wrong-instruction:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: rev }
+  - { k: Target, v: "x86-64 ELF with four anti-disassembly tricks" }
+  - { k: Tools, v: IDA }
+alpacahack-greetings-i18n-2:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: web }
+  - { k: Target, v: "Flask 3.1.3 on Python 3.14" }
+  - { k: Tools, v: "curl, Python" }
+alpacahack-nested-eval:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: misc · pyjail }
+  - { k: Target, v: "Python eval jail with a character blacklist" }
+  - { k: Tools, v: Python }
+alpacahack-the-3rd:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: crypto · ECC }
+  - { k: Target, v: "Elliptic curve over a three-prime modulus" }
+  - { k: Tools, v: SageMath }
+alpacahack-what-is-my-pointer-2:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: pwn }
+  - { k: Target, v: "x86-64 ELF: printf leak and an 8-byte read loop" }
+  - { k: Tools, v: pwntools }
+alpacahack-fsbase-modification:
+  - { k: Source, v: AlpacaHack Daily }
+  - { k: Category, v: pwn }
+  - { k: Target, v: "x86-64 ELF that lets you set the FS base" }
+  - { k: Tools, v: pwntools }
+
+# ---------- crackmes.one ----------
+cryptpad:
+  - { k: Source, v: crackmes.one }
+  - { k: Category, v: rev · crypto }
+  - { k: Target, v: "Windows GUI app and an encrypted flag.enc" }
+  - { k: Tools, v: Python }
+flrscrnsvr:
+  - { k: Source, v: crackmes.one }
+  - { k: Category, v: rev }
+  - { k: Target, v: "64-bit Windows screensaver (.scr)" }
+  - { k: Tools, v: "IDA, Python" }
+recordplayer:
+  - { k: Source, v: crackmes.one }
+  - { k: Category, v: rev · patching }
+  - { k: Target, v: "Windows x86-64 GUI audio app" }
+  - { k: Tools, v: "x64dbg, IDA" }
+httpd-icmp-backdoor:
+  - { k: Source, v: crackmes.one }
+  - { k: Category, v: rev · crypto }
+  - { k: Target, v: "FreeBSD ELF built with Go 1.17.1" }
+  - { k: Tools, v: "Python (cryptography), objdump" }
+connected:
+  - { k: Source, v: crackmes.one }
+  - { k: Category, v: rev }
+  - { k: Target, v: "C++ ELF network simulator" }
+  - { k: Tools, v: "Decompiler, readelf, objdump, Python" }
+what-did-you-type:
+  - { k: Source, v: crackmes.one }
+  - { k: Category, v: rev · forensics }
+  - { k: Target, v: "USB keyboard capture and dropped Windows binaries" }
+  - { k: Tools, v: "tshark, radare2, pefile" }
+wallpaper:
+  - { k: Source, v: crackmes.one }
+  - { k: Category, v: rev }
+  - { k: Target, v: "1 KB static, syscall-only ELF64" }
+  - { k: Tools, v: "GDB, Python" }
+moment-anti-analysis:
+  - { k: Source, v: crackmes.one }
+  - { k: Category, v: rev · hard }
+  - { k: Target, v: "64-bit Windows PE, about 1.2 MB" }
+  - { k: Tools, v: "Python (pefile, capstone), x64dbg, ScyllaHide" }
+
+# ---------- CTF writeups ----------
+aes-key-from-power-traces:
+  - { k: Source, v: Hardware CTF challenge }
+  - { k: Category, v: Side-channel · crypto }
+  - { k: Target, v: "AES power traces, 640 samples each" }
+  - { k: Tools, v: "Python, NumPy" }
+
+# ---------- CTF recaps ----------
+holmes-ctf-2025-recap:
+  - { k: Event, v: HTB Holmes CTF 2025 }
+  - { k: Team, v: Despair (solo) }
+  - { k: Result, v: "65 / 65 solved, 251st of 7,085" }
+  - { k: Tools, v: "Ghidra, Volatility 3, Wireshark, MFTECmd" }
+cyber-apocalypse-2026-recap:
+  - { k: Event, v: HTB Cyber Apocalypse 2026 }
+  - { k: Team, v: Despair (solo) }
+  - { k: Result, v: "120 / 136 solved, 210th of 6,744" }
+  - { k: Highlight, v: "Web/Provision, a PHP POP chain" }
+
+# ---------- notes ----------
+metacognitive-traps-coding-with-ai:
+  - { k: Type, v: Notes }
+  - { k: Topic, v: Learning and problem-solving }
+  - { k: Covers, v: "Eight traps, from Forming to Mislead" }
+  - { k: Context, v: Coding with AI completion }

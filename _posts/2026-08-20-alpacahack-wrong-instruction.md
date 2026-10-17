@@ -27,12 +27,12 @@ that confuse IDA's linear-sweep disassembler:
 | --- | ----------------------- | --------------- | ------------------------------------------------------------------------ |
 | 1   | Misaligned jump         | `0x11D4`        | `jmp $-1` hides `call rax` behind its own operand byte                   |
 | 2   | Return-address mutation | `sub_1204`      | `[rsp] += 5` skips 5 dead bytes; IDA never sees the real entry point     |
-| 3   | Data-blob disguise      | `0x11D8–0x11EB` | Real loop instructions hidden inside `dq` blobs                          |
-| 4   | Opaque predicate        | `0x11EC–0x11EF` | `je`/`jnz` pair always branches to the same target, faking a conditional |
+| 3   | Data-blob disguise      | `0x11D8-0x11EB` | Real loop instructions hidden inside `dq` blobs                          |
+| 4   | Opaque predicate        | `0x11EC-0x11EF` | `je`/`jnz` pair always branches to the same target, faking a conditional |
 
 ---
 
-## Step 1 — Initial Reconnaissance
+## Step 1: Initial Reconnaissance
 
 ```
 $ file wrong-instruction
@@ -52,7 +52,7 @@ Incorrect...
 
 ---
 
-## Step 2 — Reading `main`
+## Step 2: Reading `main`
 
 Open the binary in IDA and let auto-analysis finish. The decompiler gives:
 
@@ -87,11 +87,11 @@ Double-click `encoded` to see the validation target at `.rodata:0x2020`:
 16 33 2C 32 3F 4D 50 60  6C 64 7A 8C
 ```
 
-60 bytes — one per input character.
+60 bytes - one per input character.
 
 ---
 
-## Step 3 — First Look at `is_correct`
+## Step 3: First Look at `is_correct`
 
 Navigating to `is_correct`, IDA initially shows:
 
@@ -118,14 +118,14 @@ sub_1204:
     retn
 ```
 
-The `dq` blobs and `fidivr` are not real — they are a symptom of IDA failing
+The `dq` blobs and `fidivr` are not real - they are a symptom of IDA failing
 to follow the misaligned jump. Four patching passes are needed.
 
 ---
 
-## Step 4 — Understanding the Tricks (Before Patching)
+## Step 4: Understanding the Tricks (Before Patching)
 
-### Trick 1 — Misaligned jump at `0x11D4`
+### Trick 1: Misaligned jump at `0x11D4`
 
 Raw bytes at `0x11D4`:
 
@@ -135,7 +135,7 @@ Raw bytes at `0x11D4`:
 
 IDA correctly decodes the `jmp` but then **linearly disassembles from `0x11D6`**
 (the byte after the instruction), treating the `FF` operand and whatever follows
-as a new instruction stream — producing garbage.
+as a new instruction stream - producing garbage.
 
 What actually executes when CPU reaches `0x11D5`:
 
@@ -146,7 +146,7 @@ What actually executes when CPU reaches `0x11D5`:
 The `FF` byte at `0x11D5` is simultaneously the *operand* of the `jmp` above
 and the *opcode* of `call r/m64` when landed on directly.
 
-### Trick 2 — Return-address mutation in `sub_1204`
+### Trick 2: Return-address mutation in `sub_1204`
 
 ```asm
 sub_1204:
@@ -165,15 +165,15 @@ sub_1204:     [rsp] += 5
               ret  →  jumps to 0x11DC,  NOT 0x11D7
 ```
 
-Bytes `0x11D7–0x11DB` are **never executed** — they exist only to mislead
+Bytes `0x11D7-0x11DB` are **never executed** - they exist only to mislead
 IDA into disassembling them as code.
 
-### Trick 3 — Data-blob disguise (`0x11D8–0x11EB`)
+### Trick 3: Data-blob disguise (`0x11D8-0x11EB`)
 
 The five `dq` values IDA shows are the real loop instructions, correctly decoded
 only when IDA starts from `0x11DC` (the true entry point).
 
-### Trick 4 — Opaque predicate (`0x11EC–0x11EF`)
+### Trick 4: Opaque predicate (`0x11EC-0x11EF`)
 
 ```
 0x11EC:  74 04   je  +4  →  0x11F2
@@ -181,7 +181,7 @@ only when IDA starts from `0x11DC` (the true entry point).
 ```
 
 Both branches target `0x11F2`. Since the Zero Flag is always either set or
-clear, one of the two jumps always fires — this is an **unconditional jump**
+clear, one of the two jumps always fires - this is an **unconditional jump**
 disguised as two conditional ones.
 
 The secondary effect: `jnz +2` has its own next-PC at `0x11F0`, so IDA plants
@@ -191,7 +191,7 @@ consuming the real `lea`/`sub`/`or` instructions inside a fake
 
 ---
 
-## Step 5 — Patch 1: Fix the Misaligned Jump (`0x11D4`)
+## Step 5: Patch 1: Fix the Misaligned Jump (`0x11D4`)
 
 **Goal:** expose `call rax` at `0x11D5` as a real instruction.
 
@@ -209,7 +209,7 @@ IDA now shows:
 
 ---
 
-## Step 6 — Patch 2: NOP the Five Dead Bytes (`0x11D7–0x11DB`)
+## Step 6: Patch 2: NOP the Five Dead Bytes (`0x11D7-0x11DB`)
 
 **Goal:** let IDA flow from `call rax` into the real loop at `0x11DC`.
 
@@ -227,7 +227,7 @@ Press **`U`** on `0x11D7`, then **`C`** to reanalyze. Then press **`C`** again
 at `0x11DC` to uncover the loop initialization:
 
 ```asm
-0x11D7–0x11DB:  nop (×5)           ; patched dead bytes
+0x11D7-0x11DB:  nop (×5)           ; patched dead bytes
 
 0x11DC:  4D 31 D2    xor  r10, r10  ; i = 0
 0x11DF:  49 89 D3    mov  r11, rdx  ; r11 = 60
@@ -235,7 +235,7 @@ at `0x11DC` to uncover the loop initialization:
 
 ---
 
-## Step 7 — Patch 3: Fix the Opaque Predicate (`0x11EC–0x11EF`)
+## Step 7: Patch 3: Fix the Opaque Predicate (`0x11EC-0x11EF`)
 
 **Goal:** replace the `je`/`jnz` pair with a single unconditional jump so IDA
 follows the branch directly to `0x11F2` without creating `loc_11F0`.
@@ -244,14 +244,14 @@ Apply these bytes:
 
 | Address | Old | New | Reason |
 |---------|-----|-----|--------|
-| `0x11EC` | `74` | `90` | NOP — remove `je` opcode |
-| `0x11ED` | `04` | `90` | NOP — remove `je` operand |
-| `0x11EE` | `75` | `EB` | `jmp short` — replace `jnz` |
-| `0x11EF` | `02` | `02` | Keep — offset +2 already targets `0x11F2` |
-| `0x11F0` | `48` | `90` | NOP — kill dead byte 1 of the fake `mov rcx` |
-| `0x11F1` | `B9` | `90` | NOP — kill dead byte 2 of the fake `mov rcx` |
+| `0x11EC` | `74` | `90` | NOP - remove `je` opcode |
+| `0x11ED` | `04` | `90` | NOP - remove `je` operand |
+| `0x11EE` | `75` | `EB` | `jmp short` - replace `jnz` |
+| `0x11EF` | `02` | `02` | Keep - offset +2 already targets `0x11F2` |
+| `0x11F0` | `48` | `90` | NOP - kill dead byte 1 of the fake `mov rcx` |
+| `0x11F1` | `B9` | `90` | NOP - kill dead byte 2 of the fake `mov rcx` |
 
-> **Why NOP `0x11F0–0x11F1`?**  
+> **Why NOP `0x11F0-0x11F1`?**  
 > `jmp short +2` from `0x11EE` has its next-PC at `0x11F0`, making those
 > two bytes unreachable dead code. They are the first two bytes of the
 > `mov rcx, imm64` IDA was incorrectly decoding. Patching them to NOP
@@ -261,18 +261,18 @@ Press **`U`** on `0x11EC`, then **`C`** to reanalyze.
 
 ---
 
-## Step 8 — Clean Up Residual `db` Bytes
+## Step 8: Clean Up Residual `db` Bytes
 
 After the first three patches, IDA may still show raw `db` bytes at two spots
 where old `dq` definitions were never fully removed.
 
-### `0x11E7–0x11EF` (shows as `db 4Ah, 0Fh, ...`)
+### `0x11E7-0x11EF` (shows as `db 4Ah, 0Fh, ...`)
 
 1. Select bytes `0x11E7` through `0x11EF`.
 2. Press **`U`** to undefine.
 3. Press **`C`** at `0x11E7`.
 
-### `0x11F9` + `0x11FA–0x11FD` (shows as `db 8` + garbage `enter`)
+### `0x11F9` + `0x11FA-0x11FD` (shows as `db 8` + garbage `enter`)
 
 The `enter` instruction (`C8 49 FF C2`) at `0x11FA` is a leftover artefact.
 `0x11F9` byte `08` combined with `0x11FA` byte `C8` should be `or al, cl`:
@@ -285,7 +285,7 @@ IDA decodes `08 C8` → `or al, cl` and cascades correctly through to `retn`.
 
 ---
 
-## Step 9 — Final Disassembly
+## Step 9: Final Disassembly
 
 After all patches and cleanup, `is_correct` reads cleanly:
 
@@ -320,7 +320,7 @@ loc_11F2:
 
 ---
 
-## Step 10 — Algorithm Analysis
+## Step 10: Algorithm Analysis
 
 ### What `sub_1204` really does
 
@@ -345,7 +345,7 @@ int is_correct(char *input, uint8_t *encoded, int len) {
 ```
 
 `al` is OR'd with every difference. It stays zero only if **every single
-difference is zero** — i.e., every character matched perfectly.
+difference is zero** - i.e., every character matched perfectly.
 
 ### Correctness condition
 
@@ -361,7 +361,7 @@ input[i]  =  (encoded[i] − i×8 − 0x37) mod 256
 
 ---
 
-## Step 11 — Solve Script
+## Step 11: Solve Script
 
 ```python
 #!/usr/bin/env python3
@@ -396,16 +396,16 @@ Alpaca{These_methods_are_called_anti-disassembly_techniques}
 
 | Address | Old bytes | New bytes | Trick fixed |
 |---------|-----------|-----------|-------------|
-| `0x11D4` | `EB` | `90` | Misaligned jump — expose `call rax` |
+| `0x11D4` | `EB` | `90` | Misaligned jump - expose `call rax` |
 | `0x11D7` | `0F` | `90` | Dead byte 1 of 5 (skipped by `[rsp]+5`) |
 | `0x11D8` | `0B` | `90` | Dead byte 2 |
 | `0x11D9` | `C3` | `90` | Dead byte 3 |
 | `0x11DA` | `81` | `90` | Dead byte 4 |
 | `0x11DB` | `C1` | `90` | Dead byte 5 |
-| `0x11EC` | `74` | `90` | Opaque predicate — remove `je` |
-| `0x11ED` | `04` | `90` | Opaque predicate — remove `je` operand |
-| `0x11EE` | `75` | `EB` | Opaque predicate — `jnz` → `jmp short` |
-| `0x11EF` | `02` | `02` | Keep — correct offset to `0x11F2` |
+| `0x11EC` | `74` | `90` | Opaque predicate - remove `je` |
+| `0x11ED` | `04` | `90` | Opaque predicate - remove `je` operand |
+| `0x11EE` | `75` | `EB` | Opaque predicate - `jnz` → `jmp short` |
+| `0x11EF` | `02` | `02` | Keep - correct offset to `0x11F2` |
 | `0x11F0` | `48` | `90` | Dead preamble of fake `mov rcx` |
 | `0x11F1` | `B9` | `90` | Dead preamble of fake `mov rcx` |
 
@@ -429,11 +429,11 @@ After the patches, manually press **`U`** then **`C`** at `0x11E7` and
 │                          │ 0x1204     │ IDA never sees the real entry at    │
 │                          │            │ 0x11DC                              │
 ├──────────────────────────┼────────────┼─────────────────────────────────────┤
-│ Data-blob disguise       │ 0x11D8–    │ IDA shows dq objects; actual x86-64 │
+│ Data-blob disguise       │ 0x11D8-    │ IDA shows dq objects; actual x86-64 │
 │                          │ 0x11EB     │ instructions when decoded from the  │
 │                          │            │ real entry point 0x11DC             │
 ├──────────────────────────┼────────────┼─────────────────────────────────────┤
-│ Opaque predicate         │ 0x11EC–    │ je + jnz both target 0x11F2;        │
+│ Opaque predicate         │ 0x11EC-    │ je + jnz both target 0x11F2;        │
 │ (je / jnz)               │ 0x11EF     │ unconditional but looks conditional;│
 │                          │            │ loc_11F0 label causes IDA to decode │
 │                          │            │ real instructions as a fake         │

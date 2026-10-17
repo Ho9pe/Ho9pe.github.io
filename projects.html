@@ -1,0 +1,74 @@
+---
+layout: page
+title: Projects
+permalink: /projects/
+eyebrow: Research code · software · analysis
+lede: Research code, systems coursework and things I've built along the way.
+actions:
+  - { label: github.com/Ho9pe, social: github, icon: external }
+---
+{%- comment -%}Cards come from _data/projects.yml.{%- endcomment -%}
+{%- assign projects = site.data.projects -%}
+<section class="band" aria-labelledby="h-rc">
+  <div class="wrap tight stack sm">
+    <div class="sec-row"><h2 id="h-rc" class="h-sub">Research code</h2><span class="count">{{ projects.research.size }} repositories</span></div>
+    {%- for proj in projects.research %}
+    {%- if proj.feature %}
+    <a class="project-feature" href="https://github.com/{{ proj.repo }}">
+      <div class="pf-body">
+        <div class="badges"><span class="badge cool">{{ proj.tag }}</span><span class="badge" style="border-color: transparent; padding-inline: 0">{{ proj.repo }}</span></div>
+        <h3>{{ proj.name }}</h3>
+        <p>{{ proj.blurb }}</p>
+        <ul class="chips">{% for s in proj.stack %}<li>{{ s }}</li>{% endfor %}</ul>
+      </div>
+      <div class="pf-side" aria-label="Pipeline stages">
+        {% for st in proj.stages %}<span><b>stage</b>  {{ st }}</span>{% endfor %}
+      </div>
+    </a>
+    {%- endif %}
+    {%- endfor %}
+    <div class="card-grid wide">
+      {%- for proj in projects.research %}
+      {%- unless proj.feature %}
+      <a class="card r4" href="https://github.com/{{ proj.repo }}" style="padding: 28px">
+        <span class="repo-head"><span>{{ proj.repo }}{% if proj.tag %} · {{ proj.tag }}{% endif %}</span>{% include icon.html name="external" px=18 %}</span>
+        <h3 class="card-title" style="font-size: 22px">{{ proj.name }}</h3>
+        <p class="card-text">{{ proj.blurb }}</p>
+        <ul class="chips">{% for s in proj.stack %}<li>{{ s }}</li>{% endfor %}</ul>
+      </a>
+      {%- endunless %}
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="h-sw">
+  <div class="wrap tight stack sm">
+    <div class="sec-row"><h2 id="h-sw" class="h-sub">Software</h2><span class="count">{{ projects.software.size }} repositories</span></div>
+    <div class="card-grid" style="--card-min: 340px; --card-gap: 16px">
+      {%- for proj in projects.software %}
+      <a class="card r4" href="https://github.com/{{ proj.repo }}">
+        <span class="repo-head"><span>{{ proj.repo }}</span>{% include icon.html name="external" px=18 %}</span>
+        <h3 class="card-title">{{ proj.name }}</h3>
+        <p class="card-text">{{ proj.blurb }}</p>
+        <ul class="chips">{% for s in proj.stack %}<li>{{ s }}</li>{% endfor %}</ul>
+      </a>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="band band-soft" aria-labelledby="h-an">
+  <div class="wrap tight stack sm">
+    <h2 id="h-an" class="h-sub">Analysis &amp; design work</h2>
+    <div class="card-grid" style="--card-min: 440px; --card-gap: 16px">
+      {%- for item in projects.analysis %}
+      <article class="card r3" style="padding: 28px">
+        <span class="card-foot">{{ item.meta }}</span>
+        <h3 class="card-title">{{ item.title }}</h3>
+        <p class="card-text">{{ item.text }}</p>
+      </article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>

@@ -23,7 +23,7 @@ tags: ["rev", "go", "network", "crypto"]
 
 ## Overview
 
-`httpd` is a Go binary that masquerades as a simple HTTP server while secretly operating as an ICMP-triggered backdoor. It listens for a magic ICMP echo request, derives an AES-128 key and CBC IV from fields in the captured packet, and decrypts a hardcoded 32-byte ciphertext — printing the flag to stdout.
+`httpd` is a Go binary that masquerades as a simple HTTP server while secretly operating as an ICMP-triggered backdoor. It listens for a magic ICMP echo request, derives an AES-128 key and CBC IV from fields in the captured packet, and decrypts a hardcoded 32-byte ciphertext - printing the flag to stdout.
 
 The challenge is entirely static: no network access, no PCAP file, no running environment. The flag can be recovered purely by understanding the packet field offsets, the IV construction logic, and recognizing that most of those fields are **predictable constants** in any standard ICMP packet.
 
@@ -79,10 +79,10 @@ For each captured packet, it reads the raw bytes and validates four conditions. 
 
 |Frame Offset|Field|Required Value|
 |---|---|---|
-|`0x10–0x11`|IP Total Length (byteswapped)|`0x0020` (32 bytes)|
+|`0x10-0x11`|IP Total Length (byteswapped)|`0x0020` (32 bytes)|
 |`0x22`|ICMP Type|`0x08` (Echo Request)|
-|`0x26–0x27`|ICMP Identifier|`0x1337`|
-|`0x2a–0x2d`|ICMP Data (first 4 bytes)|`0xe55fdec6`|
+|`0x26-0x27`|ICMP Identifier|`0x1337`|
+|`0x2a-0x2d`|ICMP Data (first 4 bytes)|`0xe55fdec6`|
 
 If any check fails, the packet is discarded and the loop continues.
 
@@ -167,7 +167,7 @@ The decryption call sequence in the assembly is:
 748525:  call   628e00 <crypto/aes.NewCipher>
 ```
 
-**Critically: `NewCipher` is called with the IV slice as the key.** Not a separate key — the same 16-byte IV is used as both the AES key and the CBC IV.
+**Critically: `NewCipher` is called with the IV slice as the key.** Not a separate key - the same 16-byte IV is used as both the AES key and the CBC IV.
 
 ```asm
 748572:  mov    0x88(%rsp),%rcx     ; Block.type
@@ -196,12 +196,12 @@ The IV depends on values read from the raw packet frame. Let's map every byte:
 
 |IV bytes|Source|Varies?|
 |---|---|---|
-|`[0:2]`|`byteswap(0xe55f XOR cksum_le)`|Yes — depends on ICMP checksum|
-|`[2:6]`|`frame[0x14:0x18]`|**Mostly fixed** — see below|
-|`[6:8]`|`frame[0x24:0x26]` (ICMP checksum raw bytes)|Yes — depends on ICMP checksum|
+|`[0:2]`|`byteswap(0xe55f XOR cksum_le)`|Yes - depends on ICMP checksum|
+|`[2:6]`|`frame[0x14:0x18]`|**Mostly fixed** - see below|
+|`[6:8]`|`frame[0x24:0x26]` (ICMP checksum raw bytes)|Yes - depends on ICMP checksum|
 |`[8:12]`|`frame[0x2a:0x2e]` (ICMP data magic)|**Fixed**: `c6 de 5f e5`|
 |`[12:14]`|`frame[0x26:0x28]` (ICMP ID = 0x1337)|**Fixed**: `37 13`|
-|`[14:16]`|`byteswap(0xdec6 XOR cksum_le)`|Yes — depends on ICMP checksum|
+|`[14:16]`|`byteswap(0xdec6 XOR cksum_le)`|Yes - depends on ICMP checksum|
 
 ### Frame offset 0x14 is NOT the source IP
 
@@ -211,14 +211,14 @@ This is the critical realization. With a 14-byte Ethernet header, the IP header 
 |---|---|---|
 |`0x0e`|0|Version + IHL|
 |`0x0f`|1|DSCP + ECN|
-|`0x10`|2–3|**Total Length** (checked: must be 0x0020)|
-|`0x12`|4–5|Identification|
-|`0x14`|6–7|**Flags + Fragment Offset**|
+|`0x10`|2-3|**Total Length** (checked: must be 0x0020)|
+|`0x12`|4-5|Identification|
+|`0x14`|6-7|**Flags + Fragment Offset**|
 |`0x16`|8|**TTL**|
 |`0x17`|9|**Protocol** (always 0x01 for ICMP)|
-|`0x18`|10–11|Header Checksum|
-|`0x1a`|12–15|Source IP|
-|`0x1e`|16–19|Destination IP|
+|`0x18`|10-11|Header Checksum|
+|`0x1a`|12-15|Source IP|
+|`0x1e`|16-19|Destination IP|
 
 So `frame[0x14:0x18]` = `[Flags_byte, Frag_byte, TTL, Protocol]`, **not** the source IP. The source IP (at `0x1a`) is never read.
 
@@ -229,7 +229,7 @@ For a standard non-fragmented ICMP packet from a Unix-like system:
 - **TTL** = `0x40` (64, the default on Linux and FreeBSD)
 - **Protocol** = `0x01` (ICMP)
 
-So `iv[2:6]` = `[0x40, 0x00, 0x40, 0x01]` — predictable constants.
+So `iv[2:6]` = `[0x40, 0x00, 0x40, 0x01]` - predictable constants.
 
 ### The ICMP checksum depends only on the sequence number
 
@@ -239,7 +239,7 @@ The ICMP packet structure for the magic packet:
 Type=0x08, Code=0x00, Checksum=?, ID=0x1337, Seq=?, Data=[c6 de 5f e5]
 ```
 
-Type, ID, and Data are all fixed by the magic checks. The checksum is computed over the entire ICMP packet (with checksum field zeroed). The only free variable is the **ICMP sequence number** — a 16-bit field, giving 65,536 possible checksums.
+Type, ID, and Data are all fixed by the magic checks. The checksum is computed over the entire ICMP packet (with checksum field zeroed). The only free variable is the **ICMP sequence number** - a 16-bit field, giving 65,536 possible checksums.
 
 This means the entire IV is determined by a single 16-bit value (the ICMP sequence number), assuming standard packet fields. That's fully enumerable.
 

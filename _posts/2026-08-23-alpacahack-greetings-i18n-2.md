@@ -56,7 +56,7 @@ def index():
 Three observations chain together:
 
 1. **`_()` returns an attacker-supplied string** whenever `custom-<key>` is present in the form body.
-2. **That string is passed to `.format()`.** `str.format` is not just interpolation — the field syntax permits arbitrary **attribute access** (`{x.a.b}`) and **subscripting** (`{x[key]}`, where an unquoted key is taken as a *string* literal). It cannot *call* anything, but traversal is enough here.
+2. **That string is passed to `.format()`.** `str.format` is not just interpolation - the field syntax permits arbitrary **attribute access** (`{x.a.b}`) and **subscripting** (`{x[key]}`, where an unquoted key is taken as a *string* literal). It cannot *call* anything, but traversal is enough here.
 3. **The `except` branch formats an exception object.** Exceptions carry `__traceback__`, which is the standard escape hatch out of a "you only have a `str`" format-string injection into arbitrary module globals.
 
 ### Does `request.form` populate on a GET request?
@@ -74,7 +74,7 @@ The response header also leaks the exact runtime, which matters later:
 Server: Werkzeug/3.1.8 Python/3.14.6
 ```
 
-> **Windows note.** Run every `curl` below from **Git Bash**. `cmd.exe` does not treat `'` as a quote character, so `'custom-hello=...'` is sent with the quotes embedded, the field is named `'custom-hello`, `request.form.get("custom-hello")` returns `None`, and you silently get the ordinary `Hello, x!` response. In PowerShell, `curl` is additionally an alias for `Invoke-WebRequest` — use `curl.exe` and double quotes there.
+> **Windows note.** Run every `curl` below from **Git Bash**. `cmd.exe` does not treat `'` as a quote character, so `'custom-hello=...'` is sent with the quotes embedded, the field is named `'custom-hello`, `request.form.get("custom-hello")` returns `None`, and you silently get the ordinary `Hello, x!` response. In PowerShell, `curl` is additionally an alias for `Invoke-WebRequest` - use `curl.exe` and double quotes there.
 
 ---
 
@@ -96,7 +96,7 @@ leak() {   # usage: leak '<expr after check.>'
 - `{username.nope}` → `AttributeError: 'str' object has no attribute 'nope'`.
 - `err.__traceback__.tb_frame` → the frame of `index()`, i.e. where the exception was raised.
 - `.f_globals` → `app.py`'s module globals.
-- `[check]` → the `check` **function** object (`app.py` does `from check import check`, so this is the function, not the module — had it been `import check` you would need `.check`, or go straight to module attributes).
+- `[check]` → the `check` **function** object (`app.py` does `from check import check`, so this is the function, not the module - had it been `import check` you would need `.check`, or go straight to module attributes).
 
 ## 3. Locating the flag
 
@@ -112,7 +112,7 @@ The response is ~7.5 KB because `__globals__` drags in the entire `__builtins__`
 grep -oE "'[A-Za-z_][A-Za-z0-9_]*': " out.txt | sort -u
 ```
 
-Result: builtins plus exactly one interesting name — `check`. **No flag global, no `os` import.** So the flag is baked into the function body. Check the code object:
+Result: builtins plus exactly one interesting name - `check`. **No flag global, no `os` import.** So the flag is baked into the function body. Check the code object:
 
 ```bash
 leak '__code__.co_consts'
@@ -140,13 +140,13 @@ Two useful inferences before touching the bytecode:
 
 ### Free win: partial plaintext
 
-With `len == 50`, `input[::3]` gives indices `0,3,…,48` and `input[::-3]` gives `49,46,…,1` — reverse it and it is `input[1::3]`. Two thirds of the flag, for free:
+With `len == 50`, `input[::3]` gives indices `0,3,…,48` and `input[::-3]` gives `49,46,…,1` - reverse it and it is `input[1::3]`. Two thirds of the flag, for free:
 
 ```
 A l ? a c ? { 7 ? 5 s ? M q ? ...
 ```
 
-`Al?ac?{` is `Alpaca{`, which confirms the reconstruction and the flag format before any real work. Only `flag[2::3]` (16 characters) is unknown — and the blob in `co_consts` is exactly 16 bytes long.
+`Al?ac?{` is `Alpaca{`, which confirms the reconstruction and the flag format before any real work. Only `flag[2::3]` (16 characters) is unknown - and the blob in `co_consts` is exactly 16 bytes long.
 
 ## 4. Recovering the algorithm
 
@@ -165,7 +165,7 @@ conda create -n py314 python=3.14 -y
 conda run -n py314 python -VV     # Python 3.14.6
 ```
 
-`dis.dis()` on a hand-rebuilt `CodeType` blows up with an `IndexError` inside its argument resolver (the rebuilt object has no valid line or exception table). Walking the opcode stream manually is more robust — see `solve/disasm.py`. Two 3.14-specific details matter: caches must be skipped using `dis._cache_format`, and `BINARY_OP` now subsumes subscripting (`NB_SUBSCR = 26`), alongside `NB_ADD = 0`, `NB_MULTIPLY = 5`, `NB_REMAINDER = 6`, `NB_XOR = 12`.
+`dis.dis()` on a hand-rebuilt `CodeType` blows up with an `IndexError` inside its argument resolver (the rebuilt object has no valid line or exception table). Walking the opcode stream manually is more robust - see `solve/disasm.py`. Two 3.14-specific details matter: caches must be skipped using `dis._cache_format`, and `BINARY_OP` now subsumes subscripting (`NB_SUBSCR = 26`), alongside `NB_ADD = 0`, `NB_MULTIPLY = 5`, `NB_REMAINDER = 6`, `NB_XOR = 12`.
 
 The disassembly maps cleanly back to source:
 
@@ -229,7 +229,7 @@ If the flag had not been in `co_consts`:
 | Caller frames / library globals | `{err.__traceback__.tb_frame.f_back.f_globals}` |
 | Flask internals | `{err.__traceback__.tb_frame.f_globals[app].__dict__}` |
 
-Remember `str.format` **cannot call** anything — no `__subclasses__()`, no RCE. Attribute traversal, subscripting, and the `repr` of whatever you land on is the entire primitive (`{x!r}` and format specs give some control over rendering).
+Remember `str.format` **cannot call** anything - no `__subclasses__()`, no RCE. Attribute traversal, subscripting, and the `repr` of whatever you land on is the entire primitive (`{x!r}` and format specs give some control over rendering).
 
 ## Root cause & fix
 
@@ -239,5 +239,5 @@ Never let user input become a **format string**. `_()` returns attacker data str
 return "Hello, {username}!".format(username=username)   # data is an argument, not the template
 ```
 
-Additional hardening: only accept template overrides from a trusted catalogue (never from request data); don't format exception objects into responses — log them and return an opaque error id. (Separately, `translations.get(key).get(...)` would `AttributeError` on an unknown key.)
+Additional hardening: only accept template overrides from a trusted catalogue (never from request data); don't format exception objects into responses - log them and return an opaque error id. (Separately, `translations.get(key).get(...)` would `AttributeError` on an unknown key.)
 {% endraw %}

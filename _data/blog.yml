@@ -1,0 +1,62 @@
+# How the blog is organised. The blog index builds its series filter, counts
+# and "Start here" row from this file, the home page its "Writing" section, and
+# each post its breadcrumb. A post joins the first group that lists its slug
+# under `posts`; otherwise the group that lists its `series`.
+
+groups:
+  - label: Deep dives
+    deep: true            # amber labels, "Deep dive" badge in the list
+    series: [Malware analysis, HTB Sherlocks]
+    posts: [position-independent-code-x86-64, blackhat-whisper-evidence]
+  - label: AlpacaHack Daily
+    series: [AlpacaHack Daily]
+    tile: pwn, rev, crypto and web, one challenge at a time
+  - label: crackmes.one
+    series: [crackmes.one]
+    tile: Windows and Linux reverse engineering, anti-analysis and malware-style puzzles
+  - label: CTF writeups
+    series: [Hardware, Black Hat]
+  - label: CTF recaps
+    series: [CTF recaps]
+    tile: Holmes CTF 2025 and Cyber Apocalypse 2026, both played solo
+  - label: Notes
+    series: [Notes]
+    tile: "From my Obsidian vault: binaries, Linux internals and learning"
+# Groups with a `tile` text get a tile on the home page.
+
+# Topic buttons on the blog index (post tags). A tag not listed here still
+# works on posts and in the URL (/blog/#tag); it just has no button.
+topics: [pwn, rev, crypto, web, forensics, malware, hardware, windows, linux]
+
+# Post slugs (file name without the date) for the featured rows.
+start_here: [norland-fake-game-malware-analysis, htb-ironfeather, position-independent-code-x86-64]
+home_featured: [norland-fake-game-malware-analysis, htb-ironfeather, position-independent-code-x86-64]
+
+# Optional cover strip on post cards, keyed by slug. Monospace lines;
+# <b> is accent colour, <i> is dimmed.
+covers:
+  norland-fake-game-malware-analysis:
+    - "<b>→</b> MSBuild"
+    - "<b>→</b> .NET loader, code-virtualized"
+    - "<b>→</b> DNS-over-HTTPS stager"
+  htb-ironfeather:
+    - "<i>000000</i>  50 58 34 44 4d 45 4e 43  <b>PX4DMENC</b>"
+    - "<i>000000</i>  50 58 34 55 4c 45 4e 43  <b>PX4ULENC</b>"
+  position-independent-code-x86-64:
+    - "<b>call</b>  puts@plt"
+    - "<b>jmp</b>   [puts@GOT]"
+    - "<i>; resolved by ld.so on first call</i>"
+  aes-key-from-power-traces:
+    - "<i>key space</i>   2^128"
+    - "<i>CPA</i>         <b>16 × 256 guesses</b>"
+    - "<i>traces</i>      10,000"
+  blackhat-whisper-evidence:
+    - "<i>$</i> cat ~/.ollama/history"
+    - "use the password <b>Gr33nF0x42!D1amond</b>"
+    - "<i>how to clean the bash history ...</i>"
+
+# Optional card text for converted posts (front matter `teaser` works for
+# hand-written ones), keyed by slug. Used when the summary's first sentence is
+# too long for a card.
+teasers:
+  position-independent-code-x86-64: "Following one global and one function call from the compiler's placeholder zeros to the first lazy-binding resolve in GDB."

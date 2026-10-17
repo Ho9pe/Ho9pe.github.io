@@ -43,7 +43,7 @@ Interpreting that as a bitset over ASCII codes:
 - bit 10 set → `\n` allowed
 - bits 48..51 set → `'0'..'3'` allowed
 
-So the “password” is a base-4 string (digits 0–3), and it’s okay if the last byte is `\n`.
+So the “password” is a base-4 string (digits 0-3), and it’s okay if the last byte is `\n`.
 
 **Important detail:** it reads **38 bytes**, but the later processing loop runs for **37 iterations** (it increments an index and terminates once bit 37 is reached). So:
 
@@ -112,7 +112,7 @@ This is effectively a “compute the right password” task: RE the transform an
 
 ### Naive forward search explodes
 
-At each step there are typically 2–3 valid digits. A naive forward BFS grows very fast (millions of states by depth ~20).
+At each step there are typically 2-3 valid digits. A naive forward BFS grows very fast (millions of states by depth ~20).
 
 ### Key observation: the step is invertible (on reachable states)
 

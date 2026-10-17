@@ -31,10 +31,10 @@ The binary is a 64-bit Windows PE (`moment.exe`, ~1.2 MB). The README says:
 > A Windows CTF for anyone interested in dealing with a binary that requires a mixed approach and circumventing various anti-tamper mechanisms.
 
 Running `capa.exe` and static analysis reveals:
-- 4072 `INT3`, 2002 `RDTSC`, 1007 `CPUID`, 13 `INT1`, 1 `INT2D`, 1147 `PUSHF` — heavy anti-debug/anti-tamper
+- 4072 `INT3`, 2002 `RDTSC`, 1007 `CPUID`, 13 `INT1`, 1 `INT2D`, 1147 `PUSHF` - heavy anti-debug/anti-tamper
 - 9 PE sections, `.text` is ~1 MB
 - Requires admin (manifest)
-- Custom string encoding — no readable strings in the binary
+- Custom string encoding - no readable strings in the binary
 
 Running the binary on FLARE-VM (which has analysis tools installed) produces two error messages and creates an empty `tmp.ggc` file. No flag is printed.
 
@@ -58,9 +58,9 @@ char = (call table[i].func_ptr()) ^ table[i].xor_key
 ```
 
 This builds a complete character mapping:
-- Indices 0–25 → `a`–`z`
-- Indices 26–51 → `A`–`Z`
-- Indices 52–61 → `0`–`9`
+- Indices 0-25 → `a` - `z`
+- Indices 26-51 → `A` - `Z`
+- Indices 52-61 → `0` - `9`
 - Special chars: `62='.'  63=':'  64='\\'  65='%'  67=' '  68='"'  69='_'  74='{'  75='}'` etc.
 
 Strings are built by "string builder" functions that take character indices as arguments (r8, r9, then stack at [rsp+0x20], [rsp+0x28], ...) and loop over them, decoding each via the table.
@@ -73,7 +73,7 @@ Each string builder has **two decode paths** selected by a `jmp qword ptr [rip+9
 
 1. **Anti-debug path** (Path 1): Reads `SharedUserData+0x2F8` (`[0x7FFE02F8]`), XORs with `0x77190988`, adds a constant, interprets the result as a function address, calls it twice with magic constants, then XORs the return value with `0x9A`. Under a debugger or in a VM, this produces **garbage characters**.
 
-2. **Normal path** (Path 2): Simply calls `type1_table[index].func_ptr` and XORs with `type1_table[index].xor_key` — producing the **correct characters**.
+2. **Normal path** (Path 2): Simply calls `type1_table[index].func_ptr` and XORs with `type1_table[index].xor_key` - producing the **correct characters**.
 
 The path selection is runtime-controlled. On a clean system with all anti-analysis checks passing, Path 2 is taken. On FLARE-VM (with debuggers/tools installed), Path 1 is taken, poisoning all decoded strings.
 
@@ -83,7 +83,7 @@ The path selection is runtime-controlled. On a clean system with all anti-analys
 
 ### Main Function (`0x140104520`)
 
-1. Creates `tmp.ggc` via `NtCreateFile` (direct syscall) — the file is never written to
+1. Creates `tmp.ggc` via `NtCreateFile` (direct syscall) - the file is never written to
 2. Opens registry key `HKLM\SOFTWARE\Microsoft\RemovalTools\MRT` and reads a GUID
 3. Builds an `std::unordered_map` hash table from the GUID
 4. Spawns **Thread 1** and **Thread 2** via `_beginthreadex`, both using the same start wrapper (`0x140109430`) which simply does `call [rcx]`
@@ -94,7 +94,7 @@ The path selection is runtime-controlled. On a clean system with all anti-analys
 
 ### TLS Callback (`0x140101620`)
 
-Creates a manual-reset, initially non-signaled event. The handle is stored at `0x14012B2C0`. This event is the gatekeeper — it must be signaled for the main thread to proceed to the flag path.
+Creates a manual-reset, initially non-signaled event. The handle is stored at `0x14012B2C0`. This event is the gatekeeper - it must be signaled for the main thread to proceed to the flag path.
 
 ### Thread 1 (`0x140108DE0`)
 
@@ -119,7 +119,7 @@ On FLARE-VM, most of these checks **fail** (they detect analysis tools), so the 
 
 ### Thread 2 (`0x1401031A0`)
 
-Spin-waits, then builds the string "yikes" and a taunt message — this is the error/failure output path.
+Spin-waits, then builds the string "yikes" and a taunt message - this is the error/failure output path.
 
 ---
 
@@ -184,7 +184,7 @@ Reading in Windows x64 calling convention order (r8, r9, [rsp+0x20], [rsp+0x28],
 
 **Flag: `CMO{0xbadc00d5}`**
 
-The second call at `0x1400FFA35` builds `"FLAG DISPLAY"` — the label for outputting the flag.
+The second call at `0x1400FFA35` builds `"FLAG DISPLAY"` - the label for outputting the flag.
 
 ---
 
@@ -283,12 +283,12 @@ Flag: CMO{0xbadc00d5}
 ## 7. Summary
 
 The binary uses a layered defense:
-1. **No readable strings** — all encoded via a custom table
-2. **Dual decode paths** — anti-debug path produces wrong output under analysis
-3. **17 parallel anti-analysis checks** — detect VMs, debuggers, and tools
-4. **Event-gated flag output** — flag only displayed if ALL checks pass
-5. **Direct syscalls** — bypass API hooking
-6. **Heavy obfuscation** — thousands of `INT3`, `RDTSC`, `CPUID` instructions
+1. **No readable strings** - all encoded via a custom table
+2. **Dual decode paths** - anti-debug path produces wrong output under analysis
+3. **17 parallel anti-analysis checks** - detect VMs, debuggers, and tools
+4. **Event-gated flag output** - flag only displayed if ALL checks pass
+5. **Direct syscalls** - bypass API hooking
+6. **Heavy obfuscation** - thousands of `INT3`, `RDTSC`, `CPUID` instructions
 
 The solve was **purely static**: by reverse engineering the string encoding table and tracing the character indices passed to the flag's string builder function, no dynamic execution on a clean system was needed.
 {% endraw %}

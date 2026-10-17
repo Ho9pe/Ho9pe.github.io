@@ -24,7 +24,7 @@ tags: ["rev", "windows", "patching"]
 
 ## Description
 
-A Windows GUI app that plays audio when you click PLAY — but it sounds like noise. The README hints at two broken "switches" controlling direction and pitch, but no switches are visible in the UI. They need to be fixed in the binary.
+A Windows GUI app that plays audio when you click PLAY - but it sounds like noise. The README hints at two broken "switches" controlling direction and pitch, but no switches are visible in the UI. They need to be fixed in the binary.
 
 ## Reconnaissance
 
@@ -56,9 +56,9 @@ case 1001:
     break;
 ```
 
-Both switches are **hardcoded to `1`** — the broken state. There is no UI to toggle them.
+Both switches are **hardcoded to `1`** - the broken state. There is no UI to toggle them.
 
-### Switch 1 — Direction (`sub_140003A00`)
+### Switch 1: Direction (`sub_140003A00`)
 
 ```c
 __int64 __fastcall sub_140003A00(__int64 audio_obj, unsigned __int8 a2)
@@ -73,7 +73,7 @@ __int64 __fastcall sub_140003A00(__int64 audio_obj, unsigned __int8 a2)
 
 Called with `a2=1`, the playback step is set to `-1`, traversing the PCM buffer backwards.
 
-### Switch 2 — Pitch (`sub_140003A20`)
+### Switch 2: Pitch (`sub_140003A20`)
 
 ```c
 void __fastcall sub_140003A20(__int64 audio_obj, char a2)
@@ -109,13 +109,13 @@ Then: right-click → **Patches** → **Patch File** to save.
 
 ## Result
 
-Clicking PLAY on the patched binary plays the embedded audio correctly — forward, at steady pitch — revealing the flag.
+Clicking PLAY on the patched binary plays the embedded audio correctly - forward, at steady pitch - revealing the flag.
 
 The entire fix is **2 bytes changed across 2 addresses**.
 
 ## Key Takeaways
 
-- The "switches" were not UI elements — they were hardcoded arguments in the button handler. The README was the hint to look at audio behaviour, not the interface.
+- The "switches" were not UI elements - they were hardcoded arguments in the button handler. The README was the hint to look at audio behaviour, not the interface.
 - The pitch wobble is a sinusoidal speed oscillator; recognising it as intentional distortion (not corruption) was important.
 - Use `modulename+offset` addressing in x64dbg to avoid recalculating addresses after ASLR rebases between sessions.
 {% endraw %}

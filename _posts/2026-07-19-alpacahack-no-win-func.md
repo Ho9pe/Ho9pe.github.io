@@ -45,9 +45,9 @@ __attribute__((constructor)) void setup() {
 
 Key observations:
 
-- `gets(buffer)` reads an **unbounded** line of input into a fixed 64-byte stack buffer — classic stack buffer overflow, no length checking.
+- `gets(buffer)` reads an **unbounded** line of input into a fixed 64-byte stack buffer - classic stack buffer overflow, no length checking.
 - `-fno-stack-protector` means there's no canary to defeat.
-- There is **no `win()` function** anywhere in the binary — the challenge name is a hint that the intended solution can't just be "overwrite return address with a helper function." Instead, the binary leaks the runtime address of `printf`, which is the intended primitive for defeating ASLR on the linked libc.
+- There is **no `win()` function** anywhere in the binary - the challenge name is a hint that the intended solution can't just be "overwrite return address with a helper function." Instead, the binary leaks the runtime address of `printf`, which is the intended primitive for defeating ASLR on the linked libc.
 - `checksec` on the binary shows:
 
   ```
@@ -66,7 +66,7 @@ The deployment (`Dockerfile` / `compose.yml`) runs on **Ubuntu 24.04**, which sh
 
 ## Environment Setup
 
-Since the target binary is a Linux ELF, and analysis was done from Windows (no WSL2), all Linux-side work — extracting the exact libc, running GDB, and running the pwntools exploit — was done inside Docker containers rather than a WSL2 shell:
+Since the target binary is a Linux ELF, and analysis was done from Windows (no WSL2), all Linux-side work - extracting the exact libc, running GDB, and running the pwntools exploit - was done inside Docker containers rather than a WSL2 shell:
 
 1. Built the challenge image from the provided `Dockerfile` and ran it locally to have a byte-for-byte matching binary/libc pair:
 
@@ -75,16 +75,16 @@ Since the target binary is a Linux ELF, and analysis was done from Windows (no W
    docker run -d --name chal_container -p 12346:12346 no-win-func
    ```
 
-2. Extracted the exact `chal` binary and `libc.so.6` from the running container (critical — using a "generic" Ubuntu 24.04 libc off the internet risks subtly different gadget/symbol offsets):
+2. Extracted the exact `chal` binary and `libc.so.6` from the running container (critical - using a "generic" Ubuntu 24.04 libc off the internet risks subtly different gadget/symbol offsets):
 
    ```sh
    docker cp chal_container:/chal ./chal
    docker cp chal_container:/lib/x86_64-linux-gnu/libc.so.6 ./libc.so.6
    ```
 
-3. Used a separate "toolbox" container (`ubuntu:24.04` + `pwntools` + `gdb` + `ROPgadget`) with the working directory bind-mounted, to do all analysis and run the final exploit — this avoided needing WSL2 at all.
+3. Used a separate "toolbox" container (`ubuntu:24.04` + `pwntools` + `gdb` + `ROPgadget`) with the working directory bind-mounted, to do all analysis and run the final exploit - this avoided needing WSL2 at all.
 
-## Step 1 — Confirm the Vulnerability and Leak Primitive
+## Step 1: Confirm the Vulnerability and Leak Primitive
 
 - `gets()` has no bound and directly overflows `buffer[64]` on the stack.
 - The program prints `printf`'s address every run:
@@ -102,7 +102,7 @@ Since PIE/ASLR randomizes the whole libc mapping as one contiguous region, leaki
 
 From there, every other libc symbol and gadget's absolute address is `libc_base + <known offset in an unrandomized libc>`.
 
-## Step 2 — Find the Offset to the Return Address
+## Step 2: Find the Offset to the Return Address
 
 The buffer is 64 bytes, compiled at `-O0` with no canary, so the expected stack layout for `main`'s frame is:
 
@@ -129,7 +129,7 @@ rbp   0x4242424242424242   0x4242424242424242
 rip   0x5629708d71ce        0x5629708d71ce <main+85>
 ```
 
-`rbp` coming back as a clean, unmixed `0x4242424242424242` (no bleed from either the `A`s before it or `C`s after it) confirms the saved-RBP field starts exactly at offset 64 and is exactly 8 bytes — which in turn confirms the return address starts at offset 72.
+`rbp` coming back as a clean, unmixed `0x4242424242424242` (no bleed from either the `A`s before it or `C`s after it) confirms the saved-RBP field starts exactly at offset 64 and is exactly 8 bytes - which in turn confirms the return address starts at offset 72.
 
 **2. Statically, via IDA's stack frame view:**
 
@@ -139,14 +139,14 @@ Frame size: 40 (0x40 = 64 bytes)   -> var_40 (the buffer region)
 +0x08  __return_address             -> return address
 ```
 
-This matches exactly: 64 bytes of buffer, then 8 bytes saved RBP, then the 8-byte return address at offset 72 — confirming the dynamically-derived offset statically.
+This matches exactly: 64 bytes of buffer, then 8 bytes saved RBP, then the 8-byte return address at offset 72 - confirming the dynamically-derived offset statically.
 
-## Step 3 — Find ROP Gadgets in the Extracted libc
+## Step 3: Find ROP Gadgets in the Extracted libc
 
 With no `win()` function, the exploit has to build a small ROP chain that calls `system("/bin/sh")` directly using libc's own code. Needed gadgets:
 
-- `pop rdi ; ret` — to set up the first argument (pointer to `"/bin/sh"`) for the `system()` call under the x86-64 calling convention.
-- A plain `ret` — needed as an extra "stack alignment" gadget. Since glibc 2.34+, `system()` (via `__libc_system`) can execute `movaps` instructions internally which require the stack to be 16-byte aligned at the point of the call; without this, `system()` can crash with a `#GP` before ever spawning a shell.
+- `pop rdi ; ret` - to set up the first argument (pointer to `"/bin/sh"`) for the `system()` call under the x86-64 calling convention.
+- A plain `ret` - needed as an extra "stack alignment" gadget. Since glibc 2.34+, `system()` (via `__libc_system`) can execute `movaps` instructions internally which require the stack to be 16-byte aligned at the point of the call; without this, `system()` can crash with a `#GP` before ever spawning a shell.
 
 `ROPgadget` was run directly against the extracted `libc.so.6`:
 
@@ -164,9 +164,9 @@ A plain `ret` gadget (`0x2882f` offset, picked from grepping `--only "ret"` outp
 
 **A note on CET (SHSTK / IBT)**
 
-> `checksec` reported `SHSTK: Enabled` and `IBT: Enabled` (Intel CET) on the binary. In theory, a hardware-enforced shadow stack would make classic return-address overwrites fail (the CPU maintains a separate, protected copy of return addresses and traps on mismatch). In practice, this had no effect here — the deployment environment's CPU/kernel did not actually enforce CET at runtime, so a traditional ROP chain via the overwritten return address worked without modification. This is common in cloud/VM environments where CET is compiled in but the underlying hardware or hypervisor doesn't support/enable it.
+> `checksec` reported `SHSTK: Enabled` and `IBT: Enabled` (Intel CET) on the binary. In theory, a hardware-enforced shadow stack would make classic return-address overwrites fail (the CPU maintains a separate, protected copy of return addresses and traps on mismatch). In practice, this had no effect here - the deployment environment's CPU/kernel did not actually enforce CET at runtime, so a traditional ROP chain via the overwritten return address worked without modification. This is common in cloud/VM environments where CET is compiled in but the underlying hardware or hypervisor doesn't support/enable it.
 
-## Step 4 — Resolve `system` and `"/bin/sh"`
+## Step 4: Resolve `system` and `"/bin/sh"`
 
 Using pwntools directly against the extracted `libc.so.6`, once `libc.address` is set:
 
@@ -177,7 +177,7 @@ system = libc.symbols['system']                # already an absolute address
 binsh  = next(libc.search(b'/bin/sh\x00'))      # already an absolute address
 ```
 
-## Step 5 — Build and Send the Exploit
+## Step 5: Build and Send the Exploit
 
 Final payload layout:
 

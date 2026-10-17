@@ -1,0 +1,10 @@
+{%- comment -%}Prints 1st, 2nd, 3rd, 11th, 433rd ... Usage: {% include ordinal.html n=433 %}{%- endcomment -%}
+{%- assign ord_n = include.n | plus: 0 -%}
+{%- assign ord_100 = ord_n | modulo: 100 -%}
+{%- assign ord_10 = ord_n | modulo: 10 -%}
+{%- if ord_100 >= 11 and ord_100 <= 13 -%}{%- assign ord_suffix = 'th' -%}
+{%- elsif ord_10 == 1 -%}{%- assign ord_suffix = 'st' -%}
+{%- elsif ord_10 == 2 -%}{%- assign ord_suffix = 'nd' -%}
+{%- elsif ord_10 == 3 -%}{%- assign ord_suffix = 'rd' -%}
+{%- else -%}{%- assign ord_suffix = 'th' -%}{%- endif -%}
+{{- ord_n }}{{ ord_suffix -}}

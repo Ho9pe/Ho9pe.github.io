@@ -3,32 +3,94 @@ layout: default
 ---
 {%- assign words = content | strip_html | number_of_words -%}
 {%- assign minutes = words | divided_by: 220 | plus: 1 -%}
+{%- include post-group.html post=page -%}
+{%- assign group = post_group -%}
 <article class="post">
-  <header class="post-head">
-    <p class="post-kicker">
-      <a href="{{ '/blog/' | relative_url }}">Blog</a>
-      {% if page.series %}<span aria-hidden="true">/</span> {{ page.series }}{% endif %}
-    </p>
-    <h1>{{ page.title }}</h1>
-    <p class="post-meta">
-      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%-d %b %Y' }}</time>
-      · {{ minutes }} min read
-      {% if page.platform %}· {{ page.platform }}{% endif %}
-    </p>
-    {% if page.summary %}<p class="lede">{{ page.summary }}</p>{% endif %}
-    {% if page.tags.size > 0 %}
-    <ul class="tags" aria-label="Tags">
-      {% for t in page.tags %}<li><a href="{{ '/blog/' | relative_url }}#{{ t | slugify }}">{{ t }}</a></li>{% endfor %}
-    </ul>
-    {% endif %}
+  <header class="band post-hero">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="{{ '/blog/' | relative_url }}">Blog</a>
+        {%- if group %}
+        <span aria-hidden="true">/</span>
+        {%- if page.series and page.series != group.label %}
+        <a href="{{ '/blog/' | relative_url }}#{{ group.label | slugify }}">{{ group.label }}</a>
+        <span aria-hidden="true">/</span>
+        <span class="here{% if group.deep %} deep{% endif %}">{{ page.series }}</span>
+        {%- else %}
+        <a class="here" href="{{ '/blog/' | relative_url }}#{{ group.label | slugify }}">{{ group.label }}</a>
+        {%- endif %}
+        {%- endif %}
+      </nav>
+      <h1>{{ page.title }}</h1>
+      {% if page.summary %}<p class="lede">{{ page.summary }}</p>{% endif %}
+      <div class="post-info">
+        <p class="post-meta">
+          <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%-d %b %Y' }}</time>
+          <span>{{ minutes }} min read</span>
+          {% if page.platform %}<span>{{ page.platform }}</span>{% endif %}
+        </p>
+        {%- if page.tags.size > 0 %}
+        <ul class="tag-pills" aria-label="Tags">
+          {% for t in page.tags %}<li><a href="{{ '/blog/' | relative_url }}#{{ t | slugify }}">#{{ t }}</a></li>{% endfor %}
+        </ul>
+        {%- endif %}
+      </div>
+    </div>
   </header>
-  <div class="prose">
+
+  <div class="wrap post-body">
+    <aside class="post-rail" aria-label="About this post">
+      {%- assign glance = site.data.glance[page.slug] -%}
+      {%- if glance %}
+      <div class="glance">
+        <p class="label">At a glance</p>
+        <dl>
+          {% for item in glance %}<dt>{{ item.k }}</dt><dd>{{ item.v }}</dd>{% endfor %}
+        </dl>
+      </div>
+      {%- endif %}
+      <details class="toc-rail" open hidden>
+        <summary><span class="label">On this page</span></summary>
+        <nav aria-label="On this page"><ol></ol></nav>
+      </details>
+    </aside>
+    <div class="prose">
 {{ content }}
+    </div>
   </div>
+
   <footer class="post-foot">
-    <nav class="post-nav" aria-label="More posts">
-      {% if page.previous %}<a class="prev" href="{{ page.previous.url | relative_url }}"><span>← Older</span>{{ page.previous.title }}</a>{% else %}<span></span>{% endif %}
-      {% if page.next %}<a class="next" href="{{ page.next.url | relative_url }}"><span>Newer →</span>{{ page.next.title }}</a>{% endif %}
-    </nav>
+    <div class="wrap">
+      {%- if page.previous or page.next %}
+      <nav class="post-nav" aria-label="Older and newer posts">
+        {%- if page.previous %}
+        <a class="prev" href="{{ page.previous.url | relative_url }}"><span class="k">← Older{% if page.previous.series %} · {{ page.previous.series }}{% endif %}</span><span class="t">{{ page.previous.title }}</span></a>
+        {%- endif %}
+        {%- if page.next %}
+        <a class="next" href="{{ page.next.url | relative_url }}"><span class="k">Newer{% if page.next.series %} · {{ page.next.series }}{% endif %} →</span><span class="t">{{ page.next.title }}</span></a>
+        {%- endif %}
+      </nav>
+      {%- endif %}
+
+      {%- if group %}
+      {%- assign related_count = 0 -%}
+      {%- capture related -%}
+        {%- for p in site.posts -%}
+          {%- if p.url == page.url or p.url == page.previous.url or p.url == page.next.url -%}{%- continue -%}{%- endif -%}
+          {%- include post-group.html post=p -%}
+          {%- unless post_group.label == group.label -%}{%- continue -%}{%- endunless -%}
+          {%- include post-card.html post=p cover=false -%}
+          {%- assign related_count = related_count | plus: 1 -%}
+          {%- if related_count == 2 -%}{%- break -%}{%- endif -%}
+        {%- endfor -%}
+      {%- endcapture -%}
+      {%- if related_count > 0 %}
+      <div class="stack sm">
+        <h2 class="label">More {{ group.label | downcase }}</h2>
+        <div class="card-grid" style="--card-min: 360px; --card-gap: 16px">{{ related }}</div>
+      </div>
+      {%- endif %}
+      {%- endif %}
+    </div>
   </footer>
 </article>

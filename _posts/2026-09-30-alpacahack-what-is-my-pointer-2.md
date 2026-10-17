@@ -43,12 +43,12 @@ The file is then deleted, so the flag lives **only in the `FLAG` environment var
 
 The exploit is a two-step info leak:
 
-1. **Defeat ASLR** — parse the `printf @ <addr>` leak to compute the libc base:
+1. **Defeat ASLR** - parse the `printf @ <addr>` leak to compute the libc base:
    ```
    libc_base = printf_addr - libc.symbols["printf"]
    ```
 
-2. **Find the flag** — use the arbitrary read to walk from libc's `__environ` symbol down to the `FLAG=` entry:
+2. **Find the flag** - use the arbitrary read to walk from libc's `__environ` symbol down to the `FLAG=` entry:
    ```
    __environ addr  →  read it  →  envp[] pointer on stack
    envp[] pointer  →  walk entries  →  FLAG=Alpaca{...}

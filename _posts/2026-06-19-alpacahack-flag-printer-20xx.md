@@ -35,9 +35,9 @@ for i in range(len("Alpaca{")):
 ```
 
 **What we get:**
-- A hint: `id(0)` — the memory address of the integer object `0`
+- A hint: `id(0)` - the memory address of the integer object `0`
 - One arbitrary 1-byte write anywhere in process memory
-- The server then prints only `Alpaca{` — the first 7 characters
+- The server then prints only `Alpaca{` - the first 7 characters
 
 **Goal:** Leak the 4 hidden characters `????` and the closing `}` to reconstruct the full flag.
 
@@ -54,12 +54,12 @@ print(id(x))  # e.g. 140734835490352
 
 ### 2. Small Integer Caching
 
-CPython pre-allocates and caches small integer objects. This means there is only **one object** for each small integer in the entire process — they are singletons:
+CPython pre-allocates and caches small integer objects. This means there is only **one object** for each small integer in the entire process - they are singletons:
 
 ```python
 a = 7
 b = 7
-print(a is b)          # True — same object in memory
+print(a is b)          # True - same object in memory
 print(id(a) == id(b))  # True
 ```
 
@@ -134,7 +134,7 @@ The server exposes this as a primitive: we supply the offset and the byte to wri
 
 ### 5. How `range()` Stores Its Bound
 
-`range(n)` extracts the value of `n` and stores it as a **C long** internally — not a reference to the Python integer object. So corrupting the integer object `7` does not directly change the range's stop value.
+`range(n)` extracts the value of `n` and stores it as a **C long** internally - not a reference to the Python integer object. So corrupting the integer object `7` does not directly change the range's stop value.
 
 However, the loop **iteration variable** `i` at each step IS the cached integer object. So at step 7, `i` is the integer object `7`. If that object holds value `M`, then `flag[i]` accesses `flag[M]`.
 
@@ -180,17 +180,17 @@ By writing byte `M` to `ob_digit` of integer `N`:
 
 This lets us **redirect any array index** to any position in the flag string.
 
-### The Cleanest Approach — Corrupt Only Integer `6`
+### The Cleanest Approach: Corrupt Only Integer `6`
 
 I tried to replace `len("Alpaca{")` with `len(Alpaca{????})` but i got out of bound error. Since i am replacing 7 with 12. So after printing `Alpaca{` it tries to print `flag[12]` instead of `flag[7]` which causes `IndexError: string index out of range`
 
 **Better approach:** 
 
-The loop runs iterations i=0 through i=6, printing `flag[0]`–`flag[6]` = `Alpaca{`. The last visible character is always at position 6.
+The loop runs iterations i=0 through i=6, printing `flag[0]` - `flag[6]` = `Alpaca{`. The last visible character is always at position 6.
 
 If we corrupt integer `6` → `M`, then at i=6 Python accesses `flag[M]` instead of `flag[6]`. By scanning M from 7 to 11 across separate connections, we reveal every hidden character one at a time.
 
-The last character of each output is `flag[M]` — the hidden character at that index.
+The last character of each output is `flag[M]` - the hidden character at that index.
 
 ```
 Normal output:    A l p a c a {
@@ -203,7 +203,7 @@ Corrupted (M=8):  A l p a c a X
                                flag[8] = X
 ```
 
-This single technique — **corrupt int `6`, scan M from 7 to 11** — is enough to recover the entire hidden portion of the flag.
+This single technique - **corrupt int `6`, scan M from 7 to 11** - is enough to recover the entire hidden portion of the flag.
 
 ## Exploit Script
 
